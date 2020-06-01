@@ -1,0 +1,164 @@
+
+
+\chapter{Chapter 3 - Linear methods for Regression}
+
+\subsection*{3.1 Show that the F-statistic for dropping a single coefficient of a model is equivalent to the square of the corresponding z score}
+
+Let $X$ be our data, and let $v_{j,j}$ be the $j$th diagonal element of $V = (X^T X)^{-1}$. $z_j = \hat{\beta}_j / \hat{\sigma} \sqrt{v_{j,j}}$ is the z score. 
+
+The F statistic is $$ F = \frac{(RSS_0 - RSS_1) / (p1 - p0)}{RSS_1 / (N - p_1 - 1)}$$
+Where the regression models are have $p_1 + 1$ and $p_0 + 1$ degrees of freedom respectively.
+We also know that $\hat{\sigma}^2$ is equivalent to the denominator. In the case of dropping a single variable, this simplifies to:
+$$ F = \frac{RSS_0 - RSS_1}{\hat{\sigma}^2}$$
+
+Where $\hat{\sigma}$ is derived from the bigger model.
+
+Thus our question can be simplifed to showing that: 
+
+$$ RSS_0 - RSS_1 = \hat{\beta}_n^2 /  v_{j,j} $$
+
+We know $\hat{\beta} ~ N(\beta, \sigma^2 V)$ and so $\hat{\beta}_j ~ N(\beta_j, \sigma^2 v_{j,j})$.
+
+Under the null-hypothesis $\beta_j = 0$ and so: $\hat{\beta}_j = \sigma \sqrt{v_{j,j}} Z$ where $Z \sim N(0,1)$
+Thus $\hat{\beta}^2_j = \sigma^2 v_{j,j} Z^2 = \sigma^2 v_{j,j} Q$ where $Q \sim \chi^2_1$
+
+Similarly $RSS_0, RSS_1$ have distribution $\sigma^2 \chi^2_{N_i}$ where $N_i$ is the number of degrees of freedom. Thus $RSS_0 - RSS_1  \sim \sigma^2 \chi^2_1$
+
+Hence $\hat{\beta}_j / v_{j,j}$ and $RSS_0 - RSS_1$ have the same distribution. They further test the same hypothesis and thus must be identical.
+
+
+
+\subsection*{3.3 
+a. Prove the Gauss-Markov theorem: the least squares estimate of a parameter $a^T\beta$ has a variance no bigger than that of any other linear unbiased estimate of $a^T\beta$.\\
+b. Secondly, show that if $\hat{V}$ is the variance-covariance matrix of the least squares estimate of $\beta$ and $\tilde{V}$ is the variance covariance matrix of any other linear unbiased estimate, then $\hat{V} \leq \tilde{V}$, where $B \leq A$ if $A - B$ is positive semidefinite.}
+
+First note that part b implies part a. If $\beta$ has dimension 1, then $V$ is just the variance of beta, and $\leq$ is equivalent to the normal $\leq$ operator. Taking the inner product with $a$ is just a linear operation. We thus only need to show b.
+
+
+Suppose $\hat{\beta}$ is the OLS estimate of $\beta$ and that $\tilde{\beta}$ is another linear unbiased estimate. The the variance-covariance matrices be $\hat{V}$ and $\tilde{V}$ resp.
+$\hat{\beta} = \left(X^T X\right)^{-1} X^T y$ so $\hat{\beta} = C y$ say, and write $\tilde{\beta} = (C + D) y $ for some non-zero $m x n$ matrix $D$.
+\begin{align*}
+    \mathbb{E}\left(\tilde{\beta}\right) &= \mathbb{E}\left(\left(C + D\right) \left(X\beta + \epsilon\right) \right) \\
+    &= \mathbb{E} \left(\left(X^T X\right)^{-1} X^T + D\right) \left(X\beta + \epsilon\right)  \\
+    &= \mathbb{E}\left(\left(\beta + DX\beta \right) \right) + \zeta \mathbb{E}(\epsilon) \\
+    &= \mathbb{E}\left(\left(\beta + DX\beta \right) \right) \\
+    &= \beta + DX\beta \\
+    &= \beta
+\end{align*}
+Where the last lines follow as $\tilde{\beta}$ is unbiased. In particular $DX\beta = 0$ and so $DX = 0$ as beta is an unobserved parameter to be estimated.
+
+\begin{align*}
+    \tilde{V} &= Var\left(\tilde{\beta}\right)\\
+    &= Var\left(\left(C + D\right) y \right) \\
+    &= \left(C + D\right) \left(C + D\right)^T Var\left( y \right) \\
+    &= \sigma^2 \left(C + D\right) \left(C + D\right)^T\\
+    &= \sigma^2 \left( C C^T + C D^T  + D C^T + D D^T\right)\\
+    &= \sigma^2 \left(C C^T  + C D^T  + D C^T + D D^T\right)\\
+    &= \hat{V} + \sigma^2 \left(+ C D^T  + D C^T + D D^T\right) \\
+    &= \hat{V} + \sigma^2 \left(\left(X^T X\right)^{-1}X^T D^T  +   D X \left(X^T X\right)^{-1} + D^T D\right) \\
+    &= \hat{V} + \sigma^2 D D^T
+\end{align*}
+Where we know that $D D^T$ is positive semi-definite\footnote{$v^T D D^T v = \norm{D^T v} >= 0$ $ \forall v $} and so are done.
+
+
+\subsection*{ 3.4 Show how the vector of least squares coefficients can be obtained
+from a single pass of the Gram–Schmidt procedure (Algorithm 3.1). Represent your solution in terms of the QR decomposition of X.}
+
+Let $X = QR$ be the $QR$ decomposition of $X$. This can be attained via Gram-Schmidt. We assume that $R$ has no zeros on the diagonal (i.e. the variables are linearly independent).
+Then 
+\begin{align*}
+    \hat{\beta} &= (X^T X)^{-1} X^T y \\
+    &= (R^T R)^{-1} R^T Q^T y \\
+    &= R^{-1} Q^T y
+\end{align*}
+
+We can invert $R$ via backpropogation, and $Q^T y$ is easily calculable.
+
+\subsection*{3.5 Show that the ridge regression problem (using $\alpha$ to denote the constant intercept vector)
+$$\hat{\beta} = argmin_{\beta,\alpha} \left(y - \alpha - X \beta\right)^T\left(y - \alpha - X \beta\right) + \lambda \norm{\beta}^2 $$
+is equivalent to the problem:
+$$\hat{\beta^c} = argmin_{\beta^c, \alpha^c} \left(y - \alpha^c - \tilde{X} \beta^c\right)^T\left(y - \alpha^c - \tilde{X} \beta^c\right) + \lambda \norm{\beta^c}^2 $$
+Where $\tilde{X} = X - \bar{X}$, and bar represents the the $N x p)$ matrix where each value in the $j$th column is the mean $x_j$. Give the correspondence between $\beta^c$ and the original $\beta$. Do the same for the lasso.\footnote{
+This is all a tad odd as regression with intercept is desired, but we only penalise the non-intercept terms.}}
+
+This problem is easier with summation
+
+\begin{align*}
+   &\left(y - \alpha - X \beta\right)^T\left(y - \alpha - X \beta\right) + \lambda \norm{\beta}^2\\ &=
+   \left(y - \alpha - \bar{X} \beta - (X - \bar{X}) \beta\right)^T\left(y - \alpha - \bar{X} \beta - (X - \bar{X}) \beta\right) + \lambda \norm{\beta}^2\\ &=
+   \left(y - (\alpha + \bar{X} \beta) - (X - \bar{X}) \beta\right)^T\left(y - (\alpha + \bar{X} \beta) - (X - \bar{X}) \beta\right) + \lambda \norm{\beta}^2\\ &=
+   \left(y - \alpha^c - \tilde{X} \beta^c\right)^T\left(y - \alpha^c - \tilde{X} \beta^c\right) + \lambda \norm{\beta^c}^2
+\end{align*}
+Where $\alpha^c_i = \alpha_i + \sum_{j = 1}^p \bar{x}_j \beta_j$ in all coordinates, and $\beta^c = \beta$. This is an expression of our desired form.
+This problem is equivalent to demeaning the data and adjusting the intercept.
+One can do exactly the same for the lasso.
+
+
+\subsection*{3.6 Show that the ridge regression estimate is the mean (and mode) of the posterior distribution, under a Gaussian prior $\beta ~ N(0, \tau I)$ and Gaussian sampling model $y ~ N(X\beta, \sigma^2 I)$. Find the relationship between the ridge parameter $\lambda$ and the variances $\tau$ and $\sigma^2$}
+
+This question really states that the pdf of the posterior is proportional to the pdfs of $y$ given $\beta$ and $\beta$.
+Hence:
+\begin{align}
+    f(\beta\vert y) &\propto f(\beta) f(y\vert \beta) \\
+    log(f(\beta\vert y)) &= C + log(f(\beta)) + log(f(y\vert \beta)) \\
+     &= C + -\frac{1}{2\tau}\beta^T \beta * log\left(\frac{1}{\sqrt{2*\pi*\tau}}\right)\\ &-\frac{1}{2\sigma^2}\left(y - X\beta\right) ^T \left(y - X\beta\right) *  log\left(\frac{1}{\sqrt{2*\pi*\sigma^2}}\right) \\ 
+     &= C + -\frac{1}{2\tau}\beta^T \beta  +  -\frac{1}{2\sigma^2}\left(y - X\beta\right) ^T \left(y - X\beta\right)
+\end{align}
+Where we absorb terms into the constant as needed. 
+We have recovered that: 
+\begin{align}
+    f(\beta \vert y) &= C_1e^{ -\frac{1}{2\sigma^2}\left(\frac{\sigma^2}{\tau} \beta^T \beta  +\left(y - X\beta\right) ^T \left(y - X\beta\right)\right)} \\
+    &= C_1e^{ -\frac{1}{2\sigma^2}\left(\beta^T\left(X^T X + \frac{\sigma^2}{\tau} I \right) \beta + y^T y - y^T X \beta - \beta^T X^T y\right)}\\
+    &= C_1e^{ -\frac{1}{2\sigma^2}\left(\beta^T \Sigma  \beta + y^T y - y^T X \beta - \beta^T X^T y\right)}\\
+    &= C_1e^{ -\frac{1}{2\sigma^2}\left(\left(\Sigma\beta - X^T y\right)^T\Sigma^{-1}   \left(\Sigma\beta - X^T y\right) + y^T y - y^T X^T X y\right)}\\
+    &= C_2e^{ -\frac{1}{2\sigma^2}\left(\Sigma\beta - X^T y\right)^T\Sigma^{-1}   \left(\Sigma\beta - X^T y\right)}\\
+\end{align}
+
+Where $\Sigma = \left(X^T X + \frac{\sigma^2}{\tau} I \right)$ is a $(p+1) * (p+1)$ matrix, and for (11) we absorbed into the constant any terms not dependant on $\beta$
+ 
+Thus the posterior has a multivariate gaussian pdf (up to scaling), so the mean and mode of the distribution are identical, and can be found by maximising (5) over $\beta$, which due to the minus sign is sufficient.
+
+This amounts to
+$$argmin_\beta \left( \frac{1}{\tau}\beta^T \beta  +  \frac{1}{\sigma^2}\left(y - X\beta\right) ^T \left(y - X\beta\right)\right)$$ 
+And hence is equivalent to solving:
+$$argmin_\beta  \left(\frac{\sigma^2}{\tau}\beta^T \beta  + \left(y - X\beta\right) ^T \left(y - X\beta\right)\right)$$
+
+Hence the ridge regression parameter is $\sigma^2 / \tau$
+
+\subsection*{3.9 Forward stepwise regression: Suppose we have the QR decomposition for the N x q matrix $X_1$ in a multiple regression problem with response $y$, and suppose we have an additional $p-q$ predictors in the matrix $X_2$. Denote the residual by $r$. Describe an efficient procedure for establishing which additional variable will reduce the residual sum of squares the most.}
+
+Intuition - pick the column $\hat{v}$ such that $v$ has the least angle with $r$.
+i.e. $$\hat{v} = argmax_{v \in \{columns X_2\}} \frac{\lvert r^T v\rvert}{\norm{v}}$$
+
+With this in mind, let $u_j = x_j - \frac{\lvert r^T x_j\rvert}{\norm{x_j}}$ where the $x_j$ are the columns of $X_2$, and let $v_j = \frac{u_j}{\norm{u_j}}$
+
+\begin{align*}
+    RSS &= r^T r \\
+    r &= y - \hat{y} \\
+    &= y - R^{-1} Q^T y\\
+    let\hspace{1mm} r_j &= r -  \left(r^T u_j\right) u_j \\
+    and\hspace{1mm} RSS_j &= RSS - 2 \left(r^T u_j\right)^2  + \left(r^T u_j\right)^2\\
+    then\hspace{1mm} RSS_j &= RSS -  \left(r^T u_j\right)^2\\
+\end{align*}
+Where $RSS_j$ is the residual sum of squares for our new model.
+This verifies our intuition, $RSS_j$ is minimised when we pick the column of $X_2$ with least angle to $r$.
+I assume the efficiency in the question comes from the ease of inverting $R$ compared to $X^T X$ (backpropogation will do), and that we can extend our $QR$ decomposition to include the new variable easily via Gram-Schmidt. In particular most of what is needed for Gram-Schmidt is already computed when taking inner product with the residual.
+
+\subsection*{3.10 Backward stepwise regression. Suppose we have the multiple regression fit of $y$ on $X$ along with the standard errors and Z-scores. We wish to establish which variable, when dropped, will increase the RSS the least. How would you do this?}
+
+From question 3.1 we know that the F-statistic for dropping a single coefficient of a model is equivalent to the square of the corresponding Z score.
+Further, we know the F statistic in the case of dropping 1 variable is:
+$$ \frac{\left(RSS_0 - RSS_1\right)}{RSS_1 / (N - p1 - 1)}$$
+where $N$, $p_1$ and $RSS_1$ are constant. In particular, the change is RSS is proportional to the F-score with a constant that does not depend on choice of variable to be dropped, and so the change in RSS is proportional to the square of the z-score in the same manner. Thus the difference will be smallest (smallest increase in RSS) if the variable has minimal z-score in our model.
+\subsection*{3.12 Show the ridge regression estimates can be obtained by OLS regression on an augmented data set. Add $p$ rows to the centered matrix $X$, $\sqrt{\lambda} I_p$, and augment $y$ with $p$ zeros.}
+
+Let $X_2 = [X^T,\sqrt{\lambda} I_p]^T$ be our augmented matrix, and let $y_2 = [y^T,0]^T$ be the augmented response.
+Under OLS, we have $\beta_2 = (X_2^T X_2)^{-1} X_2^T Y$.
+\begin{align*}
+X_2^T X_2 &= [X^T,\sqrt{\lambda} I_p] [X^T,\sqrt{\lambda} I_p]^T \\
+&= X^T X + \lambda I_p\\
+X_2^T y_2 &= [X^T,\sqrt{\lambda} I_p] [y^T,0]^T \\
+&= X^T y\\
+\end{align*}
+
+Thus $\beta = \left(X^T X + \lambda I_p\right)X^T y$ which is exactly the ridge regression beta for our non-augmented dataset.
