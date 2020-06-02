@@ -162,3 +162,60 @@ X_2^T y_2 &= [X^T,\sqrt{\lambda} I_p] [y^T,0]^T \\
 \end{align*}
 
 Thus $\beta = \left(X^T X + \lambda I_p\right)X^T y$ which is exactly the ridge regression beta for our non-augmented dataset.
+\subsection*{3.13 Derive expression 3.62 and show that $\hat{\beta}^{pcr}(p) = \hat{\beta}^{ls}$}
+
+Given an SVD of $X$, $X = U D V^T$ say, with $V = [v_1,\dots,v_p]$, the principal components $z_m$ in equation 3.61 are defined as $X v_m$ for all $m$.
+The principal component regression is, for any $M <= p$:
+\begin{align*}
+\hat{y}^{pcr} &= \bar{y} + \sum_{m=1}^{M} \hat{\theta_m}z_m\\    
+&=  \bar{y} + X \sum_{m=1}^{M} \hat{\theta_m} v_m
+\end{align*}
+So we can just set $hat{\beta}^{pcr}(M) =  \sum_{m=1}^{M} \hat{\theta_m} v_m$ and we're done. 
+Now it remains to show that  $\hat{\beta}^{pcr}(p) = \hat{\beta}^{ls}$.
+
+\begin{align*}
+    \hat{\beta}^{pcr}(p) &= \sum_{m=1}^{p} \hat{\theta_m} v_m\\
+    &= V [\frac{z_1^T y}{z_1^T z_1}, \dots, \frac{z_p^T y}{z_p^T z_p}]^T\\
+    &= V [\frac{z_1^T y}{d_1^2}, \dots, \frac{z_p^T y}{d_p^2}^T\\
+    &= V D^{-2}[z_1^T y, \dots, z_p^T y]^T\\
+    &= V D^{-2}[u_1^T d_1^T y, \dots, u_p^T d_p^T y]^T\\
+    &= V D^{-2} D [u_1^T y, \dots, u_p^T y]^T\\
+    &= V D^{-1} U^T y
+\end{align*}
+
+Where we made use of the SVD. Now: 
+
+\begin{align*}
+    \hat{\beta}^{ls} &= \left(X^T X\right)^{-1} X^T y \\
+    &= \left(V D U^T U D V^T\right)^{-1} U D V^T y\\
+    &= \left(V D D V^T\right)^{-1} V D U^T y\\
+    &= D^{-2}\left(V V^T\right)^{-1} V D U^T y\\
+    &= D^{-2} V D U^T y\\
+    &= V D^{-1} U^T y
+\end{align*}
+
+Using the orthonomality of $U$ and $V$.
+
+\subsection*{3.14 Show that in the orthogonal case, partial least squares stops after m = 1 steps.}
+
+Assume $X$ is such that each column has mean zero, unit variance, and the colums are orthogonal.
+let $z = \sum_i \left(x_i^T y\right) x_i$ and $\hat{\theta} = \frac{z^T y} {z^T z}$.
+
+In this case 
+\begin{align*}
+    z^T z &= \sum_i \sum_j \left(x_i^T y\right)\left(x_j^T y\right) x_i^T x_j\\
+    &= \sum_i \left(x_i^T y\right)^2 \left(x_i^T x_i\right)\\
+    &= \sum_i \left(x_i^T y\right)^2\\
+\end{align*}
+Similarly $z^T y = \sum_i \left(x_i^T y\right)^2$. Now let $x_j^{(1)} = x_j - \frac{z^T x_j}{z^T z}$
+Then let:
+$$ x_j^{(1)} = x_j - \frac{z^T x_j}{ z^T z}z$$
+In the next iteration, we have:
+\begin{align*}
+    x_j^{(1)}^T y &= x_j^T y - \frac{\left(x_j^T y\right) \left(x_j^T x_j\right)}{ \sum_i \left(x_i^T y\right)^2}z_m^T y\\
+     &= x_j^T y - \frac{x_j^T y }{ \sum_i \left(x_i^T y\right)^2 }\sum_i \left(x_i^T y\right)^2\\
+    &= x_j^T y - x_j^T y\\
+    &= 0
+\end{align*}
+
+So algorithm 3.3 (page 81 in my edition) terminates after 1 step.
