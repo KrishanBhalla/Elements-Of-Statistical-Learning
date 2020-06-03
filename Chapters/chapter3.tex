@@ -312,7 +312,7 @@ Part b) shows that correlations are monotonically decreasing with $\alpha$ as nu
 
 Setup: The data $X$ has identical columns $x$.
 
-Let $X = [x, \dots, x]$ say, for $x$ some column vector, where $X$ has dimension $n x m$.
+Let $X = [x, \dots, x]$ say, for $x$ some column vector, where $X$ has dimension $n \times m$.
 The ridge regression beta is given by 
 $$\left(X^T X + \lambda I\right)^{-1} X^T y$$
 Note $X^T y = [x^T y, \dots, x^T y]^T$
@@ -333,3 +333,18 @@ Where one uses that $M^T M = m M$.
  \end{align*}
  
 
+
+\subsection*{3.30 Consider the elastic net optimisation problem:
+$$ min_\beta \norm{y - X \beta}_2^2 + \lambda \left[ \alpha \norm{\beta}_2^2 + (1-\alpha) \norm{\beta}_1\right]$$
+Show how one can turn this into a lasso problem using an augmented version of $X$ and $y$}
+
+Let $X_2 = [X, \sqrt{\alpha \lambda}  I_p]^T$ where $X$ is $n \times p$ and we assume $X$ has been standardised while $y$ has mean $0$ (this is an easy augmentation to remove the constant in regression).
+Let $y_2 = [y, 0]$ where we have augmented $y$ with $p$ additional zeros. This is the setup in 3.12 except here we use $\alpha \lambda$ in place of $\lambda$
+\begin{align*}
+    \norm{y_2 - X_2 \beta}_2^2 &= \norm{\left[y - X \beta, \sqrt{\alpha \lambda} \beta \right]^T}_2^2\\
+    &= \norm{y - X \beta}_2^2 + \norm{\sqrt{\alpha \lambda} \beta}_2^2\\
+    &= \norm{y - X \beta}_2^2 + \alpha \lambda \norm{\beta}_2^2\\
+\end{align*}
+
+With these data, the original problem becomes a lasso optimisation problem with parameter $\lambda (1-\alpha)$ :
+$$min_\beta \norm{y_2 - X_2 \beta}_2^2 + \lambda (1-\alpha) \norm{\beta}_1$$
