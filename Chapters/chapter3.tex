@@ -28,6 +28,11 @@ Hence $\hat{\beta}_j / v_{j,j}$ and $RSS_0 - RSS_1$ have the same distribution. 
 
 
 
+
+
+
+
+
 \subsection*{3.3 
 a. Prove the Gauss-Markov theorem: the least squares estimate of a parameter $a^T\beta$ has a variance no bigger than that of any other linear unbiased estimate of $a^T\beta$.\\
 b. Secondly, show that if $\hat{V}$ is the variance-covariance matrix of the least squares estimate of $\beta$ and $\tilde{V}$ is the variance covariance matrix of any other linear unbiased estimate, then $\hat{V} \leq \tilde{V}$, where $B \leq A$ if $A - B$ is positive semidefinite.}
@@ -74,6 +79,11 @@ Then
 
 We can invert $R$ via backpropogation, and $Q^T y$ is easily calculable.
 
+
+
+
+
+
 \subsection*{3.5 Show that the ridge regression problem (using $\alpha$ to denote the constant intercept vector)
 $$\hat{\beta} = argmin_{\beta,\alpha} \left(y - \alpha - X \beta\right)^T\left(y - \alpha - X \beta\right) + \lambda \norm{\beta}^2 $$
 is equivalent to the problem:
@@ -92,6 +102,11 @@ This problem is easier with summation
 Where $\alpha^c_i = \alpha_i + \sum_{j = 1}^p \bar{x}_j \beta_j$ in all coordinates, and $\beta^c = \beta$. This is an expression of our desired form.
 This problem is equivalent to demeaning the data and adjusting the intercept.
 One can do exactly the same for the lasso.
+
+
+
+
+
 
 
 \subsection*{3.6 Show that the ridge regression estimate is the mean (and mode) of the posterior distribution, under a Gaussian prior $\beta ~ N(0, \tau I)$ and Gaussian sampling model $y ~ N(X\beta, \sigma^2 I)$. Find the relationship between the ridge parameter $\lambda$ and the variances $\tau$ and $\sigma^2$}
@@ -125,6 +140,11 @@ $$argmin_\beta  \left(\frac{\sigma^2}{\tau}\beta^T \beta  + \left(y - X\beta\rig
 
 Hence the ridge regression parameter is $\sigma^2 / \tau$
 
+
+
+
+
+
 \subsection*{3.9 Forward stepwise regression: Suppose we have the QR decomposition for the N x q matrix $X_1$ in a multiple regression problem with response $y$, and suppose we have an additional $p-q$ predictors in the matrix $X_2$. Denote the residual by $r$. Describe an efficient procedure for establishing which additional variable will reduce the residual sum of squares the most.}
 
 Intuition - pick the column $\hat{v}$ such that $v$ has the least angle with $r$.
@@ -144,6 +164,11 @@ Where $RSS_j$ is the residual sum of squares for our new model.
 This verifies our intuition, $RSS_j$ is minimised when we pick the column of $X_2$ with least angle to $r$.
 I assume the efficiency in the question comes from the ease of inverting $R$ compared to $X^T X$ (backpropogation will do), and that we can extend our $QR$ decomposition to include the new variable easily via Gram-Schmidt. In particular most of what is needed for Gram-Schmidt is already computed when taking inner product with the residual.
 
+
+
+
+
+
 \subsection*{3.10 Backward stepwise regression. Suppose we have the multiple regression fit of $y$ on $X$ along with the standard errors and Z-scores. We wish to establish which variable, when dropped, will increase the RSS the least. How would you do this?}
 
 From question 3.1 we know that the F-statistic for dropping a single coefficient of a model is equivalent to the square of the corresponding Z score.
@@ -162,6 +187,11 @@ X_2^T y_2 &= [X^T,\sqrt{\lambda} I_p] [y^T,0]^T \\
 \end{align*}
 
 Thus $\beta = \left(X^T X + \lambda I_p\right)X^T y$ which is exactly the ridge regression beta for our non-augmented dataset.
+
+
+
+
+
 \subsection*{3.13 Derive expression 3.62 and show that $\hat{\beta}^{pcr}(p) = \hat{\beta}^{ls}$}
 
 Given an SVD of $X$, $X = U D V^T$ say, with $V = [v_1,\dots,v_p]$, the principal components $z_m$ in equation 3.61 are defined as $X v_m$ for all $m$.
@@ -220,6 +250,11 @@ In the next iteration, we have:
 
 So algorithm 3.3 (page 81 in my edition) terminates after 1 step.
 
+
+
+
+
+
 \subsection*{3.19 Show that \norm{\hat{\beta}^{ridge}} increases as the tuning parameter $\lambda \rightarrow 0$. Does the same property hold for the Lasso and PLS?}
 
 Throughout this question I use regression without intercept as the intercept is not included in the authors formulation of the penalty in the Lagrangian form.
@@ -247,7 +282,7 @@ Then we see:
 All terms are non-negative, and increase with decreasing $\lambda$ so $\hat{\beta}^{ridge}$ must too.
 Recall that we can view the ridge regression estimate as the solution to
 
-$$\hat{\beta}^{ridge} = \argmin_\beta (y - X\beta)^T (y - X \beta) + \lambda \norm{\beta}_2^2$$
+$$\hat{\beta}^{ridge} = argmin_\beta (y - X\beta)^T (y - X \beta) + \lambda \norm{\beta}_2^2$$
 
 b) Lasso\\
 
@@ -259,6 +294,11 @@ In a similar way one can see that if $\lambda$ is sufficiently large, it dominat
 c) PLS\\
 
 ?
+
+
+
+
+
 
 \subsection*{3.23. Please refer to the book. LAR}
 a)Correlation with residuals remains constant in absolute value.\\
@@ -308,6 +348,59 @@ c) Show the LAR algorithm keeps correlations tied and monotonically decreasing.\
 Part a) showed that the LAR algorithm keeps correlations tied ad this is exactly the step taken for an active set of variables in the $kth$ step.
 Part b) shows that correlations are monotonically decreasing with $\alpha$ as numerator falls  faster than the numerator for $\alpha$ in $[0,1]$\footnote{One can and should compute the gradient and check that it is negative on paper.}. In particular $\lambda(0) = \lambda$ and $\lambda(1) = 0$.
 
+ 
+
+
+
+
+
+\subsection*{3.24 LAR directions}
+
+Let $A_k$ be the active set of variables at the beginning of the $k$th step, and $\beta_{A_k}$ be the coefficient vector for these variables at this step. There are $k-1$ non-zero values of $\beta$ and one zero - the latest variable to enter the active set.
+The current residual is denoted by $r_k = y - X_{A_k} \beta_{A_k}$ where $X_{A_k}$ is the subset of the data $X$ consisting of only the variables in $A_k$.
+The direction for this step is 
+$$\delta_k = \left(X_{A_k}^T X_{A_k}\right)^{-1} X_{A_k}^T r_k $$
+Let $u_k = X_{A_k} \delta_k$ be the LAR direction vector.
+Recall that the cosine of the angle between vectors $u$ and $v$ is $\frac{u^T v}{\norm{v}\norm{u}}$.
+The columns $X_{A_k}$ have unit norm.
+Thus the angle between $u_k$ and $x_j$ is $\frac{x_j^T u_k}{\norm{u_k}}$, and the denominator is constant given $u_k$.
+That is to say, the angle between $u_k$ and the predictors in $A_k$ is constant if and only if $x_j^T u_k$ is.
+
+\begin{align*}
+    X_{A_k}^T u_k &= X_{A_k}^T X_{A_k}\delta_k\\
+    &= X_{A_k}^T X_{A_k} \left(X_{A_k}^T X_{A_k}\right)^{-1} X_{A_k} r_k\\
+    &= X_{A_k}^T r_k\\
+\end{align*}
+ The last term the correlation of each predictor with the residual, and in the LAR algorithm (and from 3.23) we know that all predictors in $A_k$ have the same correlation with the residual.
+ Thus all the $x_j^T u_k$ are equal as required.
+
+\subsection*{3.25 LAR Lookahead}
+
+We use the notation from 3.24. $\beta_{A_k}(\alpha) = \beta_{A_k} + \alpha \delta_k$
+$$r_k(\alpha) = \left(I - \alpha \delta_k\right) r_k$$
+For any variable $x_i$ say, we have the correlation to $r_k(\alpha)$ defined as:
+\begin{align*}
+    c_i(\alpha) &= x_i^T r_k(\alpha)\\
+    &= \left(x_i^T - \alpha x_i^T \delta_k\right) r_k
+\end{align*}
+
+For $i$ in the active set and some $j$ not in the active set, $x_j$ can only be added if these $c_i(\alpha)$ and $c_j(\alpha)$ are equal in absolute value. 
+There are finitely many $j$ not in the active set, and for every $i$ in the active set, the correlations are the same so we can fix $i$.
+There are two cases (depending on signs):
+\begin{align*}
+\alpha_j &= \frac{(x_i - x_j)^T r_k}{(x_i - x_j)^T\delta_k r_k}\\
+\alpha_j &= \frac{(x_i + x_j)^T r_k}{(x_i + x_j)^T\delta_k r_k}
+\end{align*}
+
+We can compute all such $\alpha_j$, and then solve:
+$$ argmax_{j \notin A_k} \abs{x_j^T r_k(\alpha_j)} $$
+The result will be the next predictor to be included, with the corresponding $\alpha_j$ the value of $\alpha$ at which this predictor will be added.
+
+
+
+
+
+
 \subsection*{3.29 Please see the book. Ridge regression with duplicate variables}
 
 Setup: The data $X$ has identical columns $x$.
@@ -331,6 +424,7 @@ Where one uses that $M^T M = m M$.
      &= \frac {\lambda x^T y}{\lambda (\lambda + m\cdot x^T x)} \\
      &= \frac { x^T y}{ \lambda + m\cdot x^T x} 
  \end{align*}
+ 
  
 
 
