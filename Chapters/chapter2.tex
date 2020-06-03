@@ -1,6 +1,11 @@
 
 \chapter{Chapter 2 - Overview of supervised learning}
 
+
+
+
+
+
 \subsection*{2.1 Suppose each of K-classes has an associated target $t_k$ which is a vector of all zeros except one in the $k$th position. Show that classifying to the largest element of $\hat{y}$ amounts to choosing the closest target $min_k \norm{t_k - \hat{y}}$ if the elements of $y$ sum to one.}
 
 Our norm here is the $L^2$ norm. 
@@ -14,6 +19,11 @@ Our norm here is the $L^2$ norm.
 Where the last line follows as it is the only term dependant on $k$. $argmin$ is independent of scale, so the above states that the $k$ corresponding to the minimum value of the norm is exactly the largest element of $\hat{y}$
 
 
+
+
+
+
+
 \subsection*{2.2 Show how to compute the Bayes decision boundary for the example in Figure 2.5.}
 Setup: There are 10 means $m_k$ from a bivariate guassian distribution $N((1,0)^T, I)$ and we label this class blue.
 We take 10 $n_k$ from $N((0,1)^T, I)$ and label this class orange.
@@ -22,6 +32,11 @@ For each class there were 100 observations, where each observation was generated
 Let $x$ be an observation. We equate posteriors for $x$ being blue or yellow, and note that in our setup $\mathbb{P}(blue) = \mathbb{P}(orange)$ (priors are equal) to simplify to:
 $$\sum_k exp(-5 \norm{m_k - x}^2) = \sum_k exp(-5 \norm{n_k - x}^2)$$
 This defines a curve in the plane separating the two classes.
+
+
+
+
+
 
 \subsection*{2.3 Derive equation 2.24.}
 Setup: Consider $N$ data points uniformly distributed in a $p$-dimensional unit ball around the origin. Consider a nearest neighbour estimate at the origin. The median distance from the origin to the closest point is given by:
@@ -33,6 +48,11 @@ Thus $F_{ymin} = 1 - \left(1 - y^p\right)^N$.
 
 The median distance for $ymin$ is when $F_{ymin}(y) = 1/2$. Solving for this yields the result.
 
+
+
+
+
+
 \subsection*{2.4 Setup as in book. Projection in direction $a$.}
 
 Pick an orthonormal basis of $\mathbb{R}^p$ which includes the vector $a$, say $a_1, \dots, a_p$
@@ -43,6 +63,11 @@ The $x_i$ have distribution $N(0, I_p)$, and under such a distribution each comp
 In particular this means that each $X_{i,j}$ has distribution $N(0,1)$ and so the $z_i$ do.
 
 The squared distance from the origin is just $z_i^2$, with distribution $\chi^2_1$, and this has mean 1.
+
+
+
+
+
 
 
 \subsection*{2.6 Consider a regression problem with inputs $x_i$ and outputs $y_i$, and a parameters model $f_\theta(x)$ to be fit by least squares. Show that if there are observations with tied or identical values of $x$ then the fir can be obtained from a reduced weighted least squares problem.}
