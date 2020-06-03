@@ -212,10 +212,124 @@ Then let:
 $$ x_j^{(1)} = x_j - \frac{z^T x_j}{ z^T z}z$$
 In the next iteration, we have:
 \begin{align*}
-    x_j^{(1)}^T y &= x_j^T y - \frac{\left(x_j^T y\right) \left(x_j^T x_j\right)}{ \sum_i \left(x_i^T y\right)^2}z_m^T y\\
+    \langle x_j^{(1)}, y\rangle &= x_j^T y - \frac{\left(x_j^T y\right) \left(x_j^T x_j\right)}{ \sum_i \left(x_i^T y\right)^2}z^T y\\
      &= x_j^T y - \frac{x_j^T y }{ \sum_i \left(x_i^T y\right)^2 }\sum_i \left(x_i^T y\right)^2\\
     &= x_j^T y - x_j^T y\\
     &= 0
 \end{align*}
 
 So algorithm 3.3 (page 81 in my edition) terminates after 1 step.
+
+\subsection*{3.19 Show that \norm{\hat{\beta}^{ridge}} increases as the tuning parameter $\lambda \rightarrow 0$. Does the same property hold for the Lasso and PLS?}
+
+Throughout this question I use regression without intercept as the intercept is not included in the authors formulation of the penalty in the Lagrangian form.
+
+a) Ridge\\
+For data $X$ with mean 0 and unit variance, we have
+
+$$\hat{\beta}^{ridge} = (X^TX + \lambda I)^{-1}X^T y$$
+
+Then:
+\begin{align*}
+     \norm{\hat{\beta}^{ridge}}^2 &= \left((X^TX + \lambda I)^{-1}X^T y\right)^T (X^TX + \lambda I)^{-1}X^T y \\
+     &= \left(V (D^TD + \lambda I)^{-1}D U^T y\right)^T V(D^T D + \lambda I)^{-1} D U^T y \\
+     &= y^T U D^2 (D^T D + \lambda I)^{-2} U^T y
+\end{align*}
+Using the SVD, the commutativity of $D$ and $V$, and the orthonormality of $V$.
+$D^T D + \lambda I$ is diagonal, and so $D^2 (D^T D + \lambda I)^{-2}$ is too with entries $\frac{d_j^2}{d_j^2 + \lambda}$ on the diagonal.
+Let $z_j = (U^T y)_j$
+Then we see:
+\begin{align*}
+\norm{\hat{\beta}^{ridge}}^2 &= \sum_i \sum_j \frac{d_j^2 z_i^T z_j}{d_j^2 + \lambda}\\
+&= \sum_j \frac{d_j^2 z_j^2}{d_j^2 + \lambda}\\
+\end{align*} 
+
+All terms are non-negative, and increase with decreasing $\lambda$ so $\hat{\beta}^{ridge}$ must too.
+Recall that we can view the ridge regression estimate as the solution to
+
+$$\hat{\beta}^{ridge} = \argmin_\beta (y - X\beta)^T (y - X \beta) + \lambda \norm{\beta}_2^2$$
+
+b) Lasso\\
+
+Under a similar formulation, we have 
+$$\hat{\beta}^{lasso} = argmin_\beta (y - X\beta)^T (y - X \beta) + \lambda \norm{\beta}_1$$
+
+In a similar way one can see that if $\lambda$ is sufficiently large, it dominates this expression (for fixed $X$ and $y$), and so $\hat{\beta}^{lasso}$ will decrease in norm with increasing $\lambda$.
+
+c) PLS\\
+
+?
+
+\subsection*{3.23. Please refer to the book. LAR}
+a)Correlation with residuals remains constant in absolute value.\\
+
+\begin{align*}
+    \frac{1}{N} X^T \left(y - u(\alpha)\right) &= \frac{1}{N}\left(X^T y - \alpha X^T X\hat{\beta}\right)\\
+    &= \frac{1}{N}\left(X^T y - \alpha X^T X \left(X^T X\right)^{-1} X^T y)\right)\\
+    &= \frac{1}{N}\left(X^T y - \alpha X^T y)\right)\\
+    &= \frac{1-\alpha}{N}X^T y\\
+    \text{Thus }\lvert\frac{1}{N} X^T \left(y - u(\alpha)\right) \rvert &= (1-\alpha) [\lambda,\dots,\lambda]^T
+\end{align*}
+Which is exactly the required result in vector notation.
+
+b)Explicit form of correlation\\
+
+The question as stated ignores the need for an absolute value, so we shall assume that $\langle x_j, y - u(\alpha)\rangle >= 0$ for every $j$, else replace $x_j$ by $-x_j$ in our data.
+
+Correlations are given by covariance divided by the product of the standard deviations. as everything (data and response) is assumed to be standardised, we have:
+
+\begin{align*}
+    \left(y - u(\alpha))^T (y - u(\alpha)\right) &= 
+    y^T y - 2 y^T u(\alpha) + u(\alpha)^T u(\alpha)\\
+    &= y^T y - 2\alpha y^T X\hat{\beta} + \alpha^2 \hat{\beta}^T X^T X\hat{\beta}\\
+    &= y^T y - 2\alpha y^T X\hat{\beta} + \alpha^2 \hat{\beta}^T X^T X \left(X^TX\right)^{-1} X^T y\\
+    &= y^T y - 2\alpha y^T X\hat{\beta} + \alpha^2 \hat{\beta}^T X^T y\\
+    &= y^T y + \alpha( \alpha - 2) y^T X\hat{\beta}\\
+\end{align*}
+
+Setting $\alpha = 1$ we get $RSS = y^T y - y^T X\hat{\beta}$.
+Thus: $$\left(y - u(\alpha))^T (y - u(\alpha)\right) =  y^T y + \alpha( \alpha - 2) (y^T y - RSS)$$
+
+And so:
+\begin{align*}
+\left(y - u(\alpha))^T (y - u(\alpha)\right) &=  (1 - \alpha)^2 y^T y + \alpha(2 - \alpha) RSS \\
+&=  N (1 - \alpha)^2  + \alpha(2 - \alpha) RSS 
+\end{align*} 
+
+\begin{align*}
+    Corr\left(x_j, y - u(\alpha)\right) &= \frac{\langle x_j, y - u(\alpha)\rangle / N}{\sqrt{\langle x_j, x_j \rangle / N}{\sqrt{\langle y - u(\alpha), y - u(\alpha) \rangle / N}}}\\
+    &= \frac{\lambda (1 - \alpha)}{1\cdot{\sqrt{(1 - \alpha)^2  + \alpha(2 - \alpha) RSS / N} }}\\
+    &= \frac{(1 - \alpha)}{{\sqrt{(1 - \alpha)^2  + \alpha(2 - \alpha) RSS / N} }} \lambda \\
+\end{align*}
+As required.
+
+c) Show the LAR algorithm keeps correlations tied and monotonically decreasing.\\
+
+Part a) showed that the LAR algorithm keeps correlations tied ad this is exactly the step taken for an active set of variables in the $kth$ step.
+Part b) shows that correlations are monotonically decreasing with $\alpha$ as numerator falls  faster than the numerator for $\alpha$ in $[0,1]$\footnote{One can and should compute the gradient and check that it is negative on paper.}. In particular $\lambda(0) = \lambda$ and $\lambda(1) = 0$.
+
+\subsection*{3.29 Please see the book. Ridge regression with duplicate variables}
+
+Setup: The data $X$ has identical columns $x$.
+
+Let $X = [x, \dots, x]$ say, for $x$ some column vector, where $X$ has dimension $n x m$.
+The ridge regression beta is given by 
+$$\left(X^T X + \lambda I\right)^{-1} X^T y$$
+Note $X^T y = [x^T y, \dots, x^T y]^T$
+$X^T X$ is a constant matrix with every value $x^T x$.
+ 
+Let $M = X^T X / (x^T x)$ be the matrix of ones.
+ 
+Looking for an inverse of the form $s M + \lambda^{-1} I$ yields 
+$$s = \frac {-x^T x}{\lambda(\lambda + m x^T x)}$$
+Where one uses that $M^T M = m M$.
+ We have $$(sM + \lambda^{-1} I) [x^T y, \dots, x^T y]^T = [c, \dots, c]^T$$
+ Where 
+ \begin{align*}
+     c &= \frac {-m \cdot x^T x\cdot x^T y}{\lambda (\lambda + m\cdot x^T x)}  + \frac{x^T y}{\lambda}\\
+     &= \frac {(\lambda + m\cdot x^T x) x^T y -m \cdot x^T x\cdot x^T y}{\lambda (\lambda + m\cdot x^T x)} \\
+     &= \frac {\lambda x^T y}{\lambda (\lambda + m\cdot x^T x)} \\
+     &= \frac { x^T y}{ \lambda + m\cdot x^T x} 
+ \end{align*}
+ 
+
