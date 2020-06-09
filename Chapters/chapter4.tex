@@ -1,2 +1,136 @@
 
 \chapter{Chapter 4 - Linear methods for Classification}
+
+\subsection*{4.1 Show how to solve the generalised eigenvalue problem
+\begin{align*}
+    max_a & a^T Ba\\
+    \text{subject to }& a^T W a =1
+\end{align*}
+by transforming to a standard eigenvalue problem.}
+
+Via Lagrange multipliers we have $D (a^T B a) = \lambda D (a^T W a -1)$ for some $\lambda$.
+This gives:
+\begin{align*}
+& D (a^T B a) = \lambda D (a^T W a -1)\\
+    &\Rightarrow 2 B a = 2\lambda W a \\ 
+   &\Rightarrow B a = \lambda W a \\ 
+   &\Rightarrow W^{-1}B a = \lambda a 
+\end{align*}
+So $a$ is an eigenvector of $W^{-1}B$ with eigenvalue $\lambda$. We would select the $a$ corresponding to the largest eigenvalue\footnote{We can always scale $a$ such that our constraint is satisfied.}, as we have
+$a^T B a = \lambda a^T W a = \lambda$.
+
+\subsection*{4.2 Suppose we have features $x \in \mathbb{R}^p$, a two class response, with class sizes $N_1, N_2$, and the target coded as $-N/N_1, N/N_2$.}
+\subsubsection*{4.2a) Show that the LDA rule classifies to class 2 if 
+$$ x^T \Sigma^{-1} (\hat{\mu}_2 - \hat{\mu}_1) > \frac{1}{2} (\hat{\mu}_2 + \hat{\mu}_1) \Sigma^{-1} (\hat{\mu}_2 - \hat{\mu}_1) - log(N_2 / N_1)$$
+and class 1 otherwise
+}
+We have
+$$log \frac{\mathbb{P}(G = 2 \vert X = x)}{\mathbb{P}(G = 1 \vert X = x)} = \log\left(\frac{\pi_2}{\pi_1}\right) - \frac{1}{2}(\hat{\mu}_2 + \hat{\mu}_1) \Sigma^{-1} (\hat{\mu}_2 - \hat{\mu}_1)  + x^T \Sigma^{-1} (\hat{\mu}_2 - \hat{\mu}_1)$$
+and we classify to class 2 if this value is at at least $0$.
+Expanding gives:
+\begin{align*}
+    &\frac{\mathbb{P}(G = 2 \vert X = x)}{\mathbb{P}(G = 1 \vert X = x)} > 0 \\
+    &\iff \log\left(\frac{\pi_2}{\pi_1}\right) - \frac{1}{2}(\hat{\mu}_2 + \hat{\mu}_1) \Sigma^{-1} (\hat{\mu}_2 - \hat{\mu}_1)  + x^T \Sigma^{-1} (\hat{\mu}_2 - \hat{\mu}_1) > 0 \\
+    &\iff \log\left(\frac{N_2}{N_1}\right) - \frac{1}{2}(\hat{\mu}_2 + \hat{\mu}_1) \Sigma^{-1} (\hat{\mu}_2 - \hat{\mu}_1)  + x^T \Sigma^{-1} (\hat{\mu}_2 - \hat{\mu}_1) > 0 \\
+    &\iff x^T \Sigma^{-1} (\hat{\mu}_2 - \hat{\mu}_1) > \frac{1}{2}(\hat{\mu}_2 + \hat{\mu}_1) \Sigma^{-1} (\hat{\mu}_2 - \hat{\mu}_1) -\log\left(\frac{N_2}{N_1}\right)
+\end{align*}
+
+\subsubsection{b) Consider minimisation of the least squares criterion $\norm{y - \beta_0\cdot \mathbb{1} - X\beta}_2^2$. Show that the solution $\hat{\beta}$ satisfies
+$$\left[ (N-2) \hat{\Sigma} + N \hat{\Sigma}_B \right] \beta = N (\hat{\mu}_2 - \hat{\mu}_1)$$
+where $\hat{\Sigma}_B = \frac{N_1 N_2}{N^2}  (\hat{\mu}_2 - \hat{\mu}_1) (\hat{\mu}_2 - \hat{\mu}_1)^T$
+}
+Write $\mathbb{1}_i$ for the indicator vector corresponding to class $i$, so that $\mathbb{1} = \mathbb{1}_1 + \mathbb{1}_2$.
+We will differentiate $\left(y - \beta_0\cdot \mathbb{1} - X\beta\right)^T\left(y - \beta_0\cdot \mathbb{1} - X\beta\right)$ w.r.t $\beta$ and $\beta_0$ and solve.
+Setting the derivatives to zero gives:
+\begin{align*}
+    X^T (y - \hat{\beta}_0 \cdot \mathbb{1} - X \hat{\beta}) &= 0\\
+    \mathbb{1}^T(y - \hat{\beta}_0 \cdot \mathbb{1} - X \hat{\beta}) &= 0
+\end{align*}
+Let $\Tilde{\mu} = (N_1 \hat{\mu}_1 + N_2 \hat{\mu}_2) = X^T \mathbb{1}$. Simplifying the above, we get.
+\begin{align}
+& X^T y - \frac{1}{N} X^T\mathbb{1} \mathbb{1}^T (y - X \hat{\beta}) = X^T X \hat{\beta}\\
+    &\Rightarrow X^T y- \frac{1}{N} X^T\mathbb{1} \mathbb{1}^T y = X^T X \hat{\beta} - \frac{1}{N} X^T\mathbb{1} \mathbb{1}^T X  \hat{\beta} \\
+    &\Rightarrow X^T y - \frac{1}{N} \Tilde{\mu} \mathbb{1}^T y = X^T X \hat{\beta} - \frac{1}{N} \Tilde{\mu} \Tilde{\mu}^T  \hat{\beta} \\
+    &\Rightarrow X^T y - \frac{1}{N} \Tilde{\mu} (N_1 c_1 + N_2 c_2) = \left( X^T X - \frac{1}{N} \Tilde{\mu} \Tilde{\mu}^T \right) \hat{\beta} 
+\end{align}
+
+Expanding $\Tilde{\mu} \Tilde{\mu}^T$ gives:
+\begin{align*}
+\Tilde{\mu} \Tilde{\mu}^T &= 
+(N_1 \hat{\mu}_1 + N_2 \hat{\mu}_2) (N_1 \hat{\mu}_1 + N_2 \hat{\mu}_2)^T \\
+&= N_1^2 \hat{\mu}_1 \hat{\mu}_1^T + N_2^2 \hat{\mu}_2 \hat{\mu}_2^T + N_1 N_2(\hat{\mu}_1 \hat{\mu}_2^T + \hat{\mu}_2 \hat{\mu}_1^T)
+\end{align*}
+
+Now we want to establish the $\hat{\Sigma}$ terms
+\begin{align*}
+    \hat{\Sigma} &= \frac{1}{N-2} \left( \sum_{i = 1}^{N_1} (x_i - \hat{\mu}_1)(x_i - \hat{\mu}_1)^T + \sum_{i = N_11}^{N} (x_i - \hat{\mu}_2)(x_i - \hat{\mu}_2)^T + \right) \\ 
+    &= \frac{1}{N-2} \left( \sum_{i = 1}^{N_1} (x_i - \hat{\mu}_1 x_i^T - x_i \hat{\mu}_1^T  + \hat{\mu}_1 \hat{\mu}_1^T )\right) \\ & + \frac{1}{N-2} \left(\sum_{i = N_1+1}^{N} (x_i - \hat{\mu}_2 x_i^T - x_i \hat{\mu}_2^T  + \hat{\mu}_2 \hat{\mu}_2^T ) \right) \\
+    &= \frac{1}{N-2} \left( \sum_{i = 1}^{N} (x_i x_i^T)- 2  N_1 \hat{\mu}_1 \hat{\mu}_1^T + N_1\hat{\mu}_1 \hat{\mu}_1^T - 2 N_2 \hat{\mu}_2 \hat{\mu}_2^T  + N_2\hat{\mu}_2 \hat{\mu}_2^T \right) \\
+    &= \frac{1}{N-2} \left( X^T X - N_1\hat{\mu}_1 \hat{\mu}_1^T - N_2\hat{\mu}_2 \hat{\mu}_2^T \right)
+\end{align*}
+This yields:
+$$ X^T X = (N-2) \hat{\Sigma} + N_1\hat{\mu}_1 \hat{\mu}_1^T + N_2\hat{\mu}_2 \hat{\mu}_2^T $$
+Thus:
+\begin{align*}
+ (N-2) \hat{\Sigma} + N \hat{\Sigma}_B &= X^T X - N_1\hat{\mu}_1 \hat{\mu}_1^T - N_2\hat{\mu}_2  \hat{\mu}_2^T + \frac{N_1 N_2}{N}  (\hat{\mu}_2 - \hat{\mu}_1) (\hat{\mu}_2 - \hat{\mu}_1)^T\\
+ &= X^T X + \left(\frac{N_1 N_2}{N} -  N_1\right) \hat{\mu}_1 \hat{\mu}_1^T + \left(\frac{N_1 N_2}{N} -  N_2\right)\hat{\mu}_2 \hat{\mu}_2^T \\ &- \frac{N_1 N_2}{N}  (\hat{\mu}_1 \hat{\mu}_2^T - \hat{\mu}_2 \hat{\mu}_1^T)\\
+  &= X^T X - \frac{N_1^2}{N} \hat{\mu}_1 \hat{\mu}_1^T - \frac{N_2^2}{N}\hat{\mu}_2 \hat{\mu}_2^T - \frac{N_1 N_2}{N}  (\hat{\mu}_1 \hat{\mu}_2^T - \hat{\mu}_2 \hat{\mu}_1^T)\\ 
+  &= X^T X - \frac{1}{N}\Tilde{\mu} \Tilde{\mu}^T
+\end{align*}
+This is one side of equation $(15)$
+
+We also know that:
+$$X^T y = X^T(c_1 \mathbb{1}_1 + c_2 \mathbb{1}_2) = c_1 N_1 \mu_1 + c_2  N_2 \mu_2$$
+And
+\begin{align*}
+     \frac{1}{N} \Tilde{\mu} (N_1 c_1 + N_2 c_2) &= 
+\frac{\left(c_1 N_1^2 + c_2 N_1 N_2\right)}{N}\hat{\mu}_1 + \frac{\left(c_1 N_1 N_2 + c_2 N_2^2\right)}{N}\hat{\mu}_2 \\
+&= \frac{\left(c_1 N_1 (N - N_2) +  c_2 N_1 N_2\right)}{N}\hat{\mu}_1 + \frac{\left(c_1 N_1 N_2 + c_2 N_2(N - N_1)\right)}{N}\hat{\mu}_2\\
+&= \frac{\left(c_1 N_1 (N - N_2) +  c_2 N_1 N_2\right)}{N}\hat{\mu}_1 + \frac{\left(c_1 N_1 N_2 + c_2 N_2(N - N_1)\right)}{N}\hat{\mu}_2\\
+&= c_1 N_1 \hat{\mu}_1 + c_2 N_2 \hat{\mu}_2 + \frac{N_1 N_2}{N} \left(\left(-c_1 +  c_2 \right)\hat{\mu}_1 + \left(c_1 - c_2 )\right)\hat{\mu}_2\right)\\
+&= c_1 N_1 \hat{\mu}_1 + c_2 N_2 \hat{\mu}_2 + \frac{N_1 N_2}{N}(c_2 - c_1)(\hat{\mu}_1 - \hat{\mu}_2)
+\end{align*}
+Then 
+$$X^T y - \frac{1}{N} \Tilde{\mu} (N_1 c_1 + N_2 c_2) = \frac{N_1 N_2}{N}(c_2 - c_1)(\hat{\mu}_1 - \hat{\mu}_2)$$
+
+Thus we have all components of our above equation $(15)$
+
+Combining and simplifying gives
+$$(N-2) \hat{\Sigma} + N \hat{\Sigma}_B= \frac{N_1 N_2}{N}(c_2 - c_1)(\hat{\mu}_1 - \hat{\mu}_2) $$
+
+Substituting in our values for $c_1$ and $c_2$ gives
+$(N-2) \hat{\Sigma} + N \hat{\Sigma}_B= N(\hat{\mu}_1 - \hat{\mu}_2)  $ as required.
+
+
+
+\subsubsection*{c) Hence show that $\hat{\Sigma}_B \beta$ is in the direction  $\hat{\mu}_2 - \hat{\mu}_1$ and thus
+$$ \hat{\beta} \propto \hat{\Sigma}^{-1} \hat{\mu}_2 - \hat{\mu}_1 $$
+}
+For the direction:
+\begin{align*}
+    \hat{\Sigma}_B \beta &=  \frac{N_1 N_2}{N^2}  (\hat{\mu}_2 - \hat{\mu}_1) (\hat{\mu}_2 - \hat{\mu}_1)^T \beta \\
+    &=  \frac{N_1 N_2}{N^2}  (\hat{\mu}_2 - \hat{\mu}_1) \cdot \lambda \text{ where } \lambda \in \mathbb{R} \\
+    &=  \lambda' (\hat{\mu}_2 - \hat{\mu}_1) 
+\end{align*}
+
+For proportionality:
+\begin{align*}
+    &\left[ (N-2) \hat{\Sigma} + N \hat{\Sigma}_B \right] \hat{\beta} = N (\hat{\mu}_2 - \hat{\mu}_1) \\ 
+    &\Rightarrow (N-2) \hat{\Sigma} \hat{\beta} = N (\hat{\mu}_2 - \hat{\mu}_1 - \hat{\Sigma}_B \hat{\beta} ) \\ 
+    &\Rightarrow (N-2) \hat{\Sigma} \hat{\beta} = N (\hat{\mu}_2 - \hat{\mu}_1 - \hat{\Sigma}_B \hat{\beta} ) \\ 
+    &\Rightarrow (N-2) \hat{\Sigma} \hat{\beta} = N (\hat{\mu}_2 - \hat{\mu}_1 -  \lambda' (\hat{\mu}_2 - \hat{\mu}_1) ) \\ 
+    &\Rightarrow \hat{\Sigma} \hat{\beta} \propto \hat{\mu}_2 - \hat{\mu}_1 \\ 
+    &\Rightarrow  \hat{\beta} \propto \hat{\Sigma}^{-1} \left(\hat{\mu}_2 - \hat{\mu}_1\right) \\ 
+\end{align*}
+
+\subsubsection*{d) Show that c) holds for any (distinct) coding of the two classes.}
+
+This is simply the observation that $\frac{N_1 N_2}{N}(c_2 - c_1)$ is a scalar for any distinct coding.
+
+\subsubsection*{e) Find the solution $\hat{\beta}_0$ up to the same scalar multiple as in c)}
+
+\begin{align*}
+    \hat{\beta}_0 &= \frac{1}{N}\mathbb{1}^T\left(y - X\hat{\beta}\right)\\
+    &= \frac{N_1 c_1 + N_2 c_2}{N} - \frac{\lambda}{N} \left(N_1 \hat{\mu}_1 + N_2 \hat{\mu}_2\right) \Sigma^{-1} \left(\hat{\mu}_2 - \hat{\mu}_1 \right)\\
+\end{align*}
+Where $\lambda$ is the constant of proportionality from c).
