@@ -127,10 +127,22 @@ For proportionality:
 
 This is simply the observation that $\frac{N_1 N_2}{N}(c_2 - c_1)$ is a scalar for any distinct coding.
 
-\subsubsection*{e) Find the solution $\hat{\beta}_0$ up to the same scalar multiple as in c)}
+\subsubsection*{e) Find the solution $\hat{\beta}_0$ up to the same scalar multiple as in c). Hence find the solution for the predicted value $\hat{f}(x) = \hat{\beta}_0 + x^T \hat{\beta}$.
+
+Consider the rule where we classify to class $2$ if $\hat{f}(x) > 0$ and class $1$ otherwise. Is this the same as the LDA rule? When?}
 
 \begin{align*}
     \hat{\beta}_0 &= \frac{1}{N}\mathbb{1}^T\left(y - X\hat{\beta}\right)\\
-    &= \frac{N_1 c_1 + N_2 c_2}{N} - \frac{\lambda}{N} \left(N_1 \hat{\mu}_1 + N_2 \hat{\mu}_2\right) \Sigma^{-1} \left(\hat{\mu}_2 - \hat{\mu}_1 \right)\\
+    &= \frac{N_1 c_1 + N_2 c_2}{N} - \frac{\lambda}{N} \left(N_1 \hat{\mu}_1 + N_2 \hat{\mu}_2\right)^T \Sigma^{-1} \left(\hat{\mu}_2 - \hat{\mu}_1 \right)\\
 \end{align*}
 Where $\lambda$ is the constant of proportionality from c).
+Using our encoding, we get 
+$$\hat{\beta}_0 =  - \frac{\lambda}{N} \left(N_1 \hat{\mu}_1 + N_2 \hat{\mu}_2\right)^T \Sigma^{-1} \left(\hat{\mu}_2 - \hat{\mu}_1 \right)$$
+
+Then $$\hat{f}(x) = \lambda \left(x -\frac{N_1}{N} \hat{\mu}_1 - \frac{N_2}{N} \hat{\mu}_2\right)^T \Sigma^{-1} \left(\hat{\mu}_2 - \hat{\mu}_1 \right)$$
+
+The classification is class $2$ when:
+$$x^T \Sigma^{-1} \left(\hat{\mu}_2 - \hat{\mu}_1 \right) > \left(\frac{N_1}{N} \hat{\mu}_1 + \frac{N_2}{N} \hat{\mu}_2\right)^T \Sigma^{-1} \left(\hat{\mu}_2 - \hat{\mu}_1 \right)$$
+
+This is the same as the LDA classification when $N_1 = N_2$, but in general is different.\footnote{
+$N_1 = N_2$ gives $log (N_2 / N_1) = 0$ and $N_1 / N = N_2 / N = 1/2$ so the classification rules become identical. To see the difference set $\mu_1 = 0$ say, and the result should be clear. The log term depends only on the relative number of samples in each class, whereas the expression above depends on the average of those samples.}
