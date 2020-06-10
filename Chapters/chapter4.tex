@@ -145,3 +145,90 @@ $$x^T \Sigma^{-1} \left(\hat{\mu}_2 - \hat{\mu}_1 \right) > \left(\frac{N_1}{N} 
 
 This is the same as the LDA classification when $N_1 = N_2$, but in general is different.\footnote{
 $N_1 = N_2$ gives $log (N_2 / N_1) = 0$ and $N_1 / N = N_2 / N = 1/2$ so the classification rules become identical. To see the difference set $\mu_1 = 0$ say, and the result should be clear. The log term depends only on the relative number of samples in each class, whereas the expression above depends on the average of those samples.}
+
+\subsection*{4.3 Suppose we transform the original predictors $X$ to $\hat{Y}$ via linear regression.
+$$\hat{Y} = X\hat{B} = X(X^T X)^{-1} X^T Y$$
+where $Y$ is the indicator response matrix. Similarly for any input $x \in \mathbb{R}^p$ we get
+$\hat{y} = = \hat{B}^T x \in \mathbb{R}^K$. Show that the LDA using $\hat{Y}$ is identical to the LDA in the original space.}
+
+The discriminant functions for LDA are:
+$$\delta_k(x) = x^T \hat{\Sigma}_X^{-1} \mu_k - \frac{1}{2} \mu_k^T \hat{\Sigma}_X^{-1}\mu_k + log \pi_k$$
+
+The discriminant rule using our transformed predictors is (denoting the mean by $\eta$):
+$$\delta_k(\hat{y}) = \hat{y}^T \hat{\Sigma}_{\hat{Y}}^{-1} \eta_k - \frac{1}{2} \eta_k^T \hat{\Sigma}_{\hat{Y}}^{-1}\eta_k + log \pi_k$$
+
+Where $\eta_k = \hat{B}^T \mu_k$.
+
+
+A few things to note:
+\begin{align*}
+    \mu &= X^T YD^{-1}\\
+    \Sigma_X &= \frac{1}{N-K}\left(X^T - X^T Y D^{-1} Y^T\right) \left(X^T - X^T Y D^{-1} Y^T\right)^T\\
+    &= \frac{1}{N-K} X^T \left(I - Y D^{-1} Y^T\right)^2 X\\
+    &= \frac{1}{N-K} X^T \left(I - Y D^{-1} Y^T\right) X 
+\end{align*}
+Where $D$ is the $K \times K$ diagonal matrix with $D_{i,i} = N_i$, the number of observations in class $I$, and the last line follows as $(I - Y D^{-1} Y^T)^2 = (I - 2 Y D^{-1} Y^T + Y D^{-1} Y^T Y D^{-1} Y^T)$ and $Y^T Y = D$
+
+\begin{align*}
+    \hat{\Sigma}_{\hat{Y}} &= \frac{1}{N-K}\sum_{k = 1}^K \sum_{g_i = k} (\hat{y}_i - \eta_i) (\hat{y}_i - \eta_i)^T\\
+    &= \frac{1}{N-K}\sum_{k = 1}^K \sum_{g_i = k} \hat{B}^T(x_i - \mu_i) (x_i - \mu_i)^T \hat{B}\\
+    &=\hat{B}^T\left( \frac{1}{N-K}\sum_{k = 1}^K \sum_{g_i = k} (x_i - \mu_i) (x_i - \mu_i)^T \right)\hat{B}\\ 
+    &=\hat{B}^T \hat{\Sigma}_X\hat{B}\\
+    &=\frac{1}{N-K} \hat{B}^T X^T \left(I - Y D^{-1} Y^T\right) X\hat{B}\\
+    &=\frac{1}{N-K} \left(\hat{B}^T X^T X\hat{B} - \hat{B}^T X^T Y D^{-1} Y^T X\hat{B}\right) \\
+    &=\frac{1}{N-K} \left(\hat{B}^T X^T Y - \hat{B}^T X^T Y D^{-1} Y^T X\hat{B}\right) \\
+    &=\frac{1}{N-K} \left(\Lambda - \Lambda D^{-1}\Lambda \right) \\
+    &=\frac{1}{N-K} \Lambda\left(I - D^{-1}\Lambda \right) \\
+\end{align*}
+Where $\Lambda = \hat{B}^T X^T Y = Y^T X (X^T X)^{-1} X^T Y$ is symmetric.
+
+We will now consider each term of our discriminant function, vectorised to handle all cases at once.
+\begin{align*}
+    \hat{Y}^T \hat{\Sigma}_{\hat{Y}}^{-1} \eta &=  X^T \hat{B}  \left(\hat{B}^T \hat{\Sigma}_X\hat{B}\right)^{-1} \hat{B} \mu\\ 
+    &=  (N-K) 
+    X^T \hat{B}  \left(\Lambda - \Lambda D^{-1}\Lambda \right)^{-1} \hat{B}^T X^T Y D^{-1}\\
+    &=  (N-K) X^T \hat{B}  \left(\Lambda - \Lambda D^{-1}\Lambda \right)^{-1} \Lambda D^{-1}\\
+    &=  (N-K) X^T \hat{B}  \left(I - D^{-1}\Lambda \right)^{-1}  D^{-1}\\
+    &=  (N-K) X^T \Sigma_X^{-1} \Sigma_X \hat{B}  \left(I - D^{-1}\Lambda \right)^{-1}  D^{-1}\\
+    &=  X^T \Sigma_X^{-1} \left( X^T X \hat{B} - X^T Y D^{-1} Y^T X \hat{B}\right)   \left(I - D^{-1}\Lambda \right)^{-1}  D^{-1}\\
+    &=  X^T \Sigma_X^{-1} \left( X^T Y - X^T Y D^{-1} \Lambda \right)   \left(I - D^{-1}\Lambda \right)^{-1}  D^{-1}\\
+    &=  X^T \Sigma_X^{-1} X^T Y \left( I - D^{-1} \Lambda \right)   \left(I - D^{-1}\Lambda \right)^{-1}  D^{-1}\\
+    &=  X^T \Sigma_X^{-1} X^T Y   D^{-1}\\
+    &=  X^T \Sigma_X^{-1} \mu\\
+\end{align*}
+So the first terms of our discriminant functions are equal. For the second term, again dealing with all classes at once:
+
+\begin{align*}
+    \eta_k^T \hat{\Sigma}_{\hat{Y}}^{-1}\eta &= \left(N-K\right) \mu_k^T \hat{B} \hat{\Sigma}_{\hat{Y}}^{-1} \hat{B}^T X^T Y D^{-1}\\
+    &=  \mu_k^T \hat{B} \left(\hat{B}^T\hat{\Sigma}_{X} \hat{B} \right)^{-1} \hat{B}^T X^T Y D^{-1}\\
+    &= \mu_k^T \hat{\Sigma}_{X}^{-1} X^T Y D^{-1}\\
+     &= \mu_k^T \hat{\Sigma}_{X}^{-1} \mu\\
+\end{align*}
+Where the penultimate line follows by the same algebra as used for the first term of our discriminant functions\footnote{Noting that when handling $\hat{Y}^T \hat{\Sigma}_{\hat{Y}}^{-1} \eta$ we could have dropped the leading $X^T$ term throughout and dealt with $\hat{B} \hat{\Sigma}_{\hat{Y}}^{-1} \eta$ instead.}
+The third term in each discriminant function is unchanged by our transformation as it depends only on the response. Thus all terms are equal and so the LDA on $\hat{Y}$ is equivalent to the LDA on $X$.
+
+
+\subsection*{ 4.6 Convergence of the perceptron algorithm.}
+\subsection{a) Please see textbook - existence of a $\beta_sep$ such that $y_i \beta_{sep}^T z_i >= 1$ for all $i$ given separable data.}
+
+The data are separable so $\exists \beta$ s.t. $ sign(\beta^T x_i^*) = y_i$.
+Thus we have $v_i := y_i \beta^T z_i > 0$ for every $i$.
+There are finitely many $i$, so we can set $\beta_{sep} = \beta / min_i v_i$ to get $y_i \beta_{sep}^T z_i >= 1$ for all $i$.
+
+\subsection{b) Please see the textbook - convergence of the perceptron.}
+
+We update $\beta$ via $\beta_{new} \leftarrow \beta_{old} + y_i z_i$
+
+\begin{align*}
+    \norm{\beta_{new} - \beta_{sep}}^2 &= \norm{\beta_{old} + y_i z_i - \beta_{sep}}^2\\
+    &= \left(\beta_{old} + y_i z_i - \beta_{sep}\right)^T\left(\beta_{old} + y_i z_i - \beta_{sep}\right)\\
+    &= \norm{\beta_{old}  - \beta_{sep}}^2 - 2 y_i \beta_{sep}^T z_i + 2 y_i \beta_{old}^T z_i + y_i^2 z_i^T z_i \\
+    &= \norm{\beta_{old}  - \beta_{sep}}^2 + 2 y_i \left(\beta_{old} -\beta_{sep}\right)^T z_i + \norm{z}_i^2\\
+    &= \norm{\beta_{old}  - \beta_{sep}}^2 + 2 y_i \left(\beta_{old} -\beta_{sep}\right)^T z_i + 1\\
+    &<= \norm{\beta_{old}  - \beta_{sep}}^2 - 2 + 1\\
+    &= \left(\beta_{old}  - \beta_{sep}\right)^T\left(\beta_{old}  - \beta_{sep}\right) - 1
+\end{align*}
+Where the penultimate line follows as $\beta_{old}$ misclassifies $z_i$ - that is to say
+$y_i \beta_{old} z_i < 0$. Hence the term $y_i \left(\beta_{old} -\beta_{sep}\right)^Tz_i$ is at most $- y_i \beta_{sep}^T z_i$, and we use part a).
+
+Hence the perceptron converges in at most $norm{\beta_{old}  - \beta_{sep}}^2 $ steps.
