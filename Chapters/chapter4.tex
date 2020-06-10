@@ -232,3 +232,24 @@ Where the penultimate line follows as $\beta_{old}$ misclassifies $z_i$ - that i
 $y_i \beta_{old} z_i < 0$. Hence the term $y_i \left(\beta_{old} -\beta_{sep}\right)^Tz_i$ is at most $- y_i \beta_{sep}^T z_i$, and we use part a).
 
 Hence the perceptron converges in at most $norm{\beta_{old}  - \beta_{sep}}^2 $ steps.
+
+
+\subsection*{4.7 Consider the criterion $$D^*(\beta) = - y^T X \beta$$
+where $X$ is prepended by a column of $1$s. Consider maximising $D^*$ subject to $\norm{\beta} = 1$.
+Describe the criterion in words. Does it solve the optimal separating hyperplane problem?}
+
+This criterion seeks to maximise the sum of individual distances between the separating hyperplane and the response points. That is, it wants 
+\begin{align*}
+    & argmax_\beta \hspace{3pt} y^T X \beta\\
+    & \norm{\beta}_2 = 1
+\end{align*}
+This in fact has an analytic solution such that $\beta \propto X^T y$ (one can replace the $\norm{\beta}_2 = 1$ condition with $\norm{\beta}^2_2 = 1$ to make life easier).
+
+However the optimal separating hyperplane problem seeks to solve the following:
+$$argmax_\beta \hspace{3pt} min_i  \hspace{3pt} y_i x_i^T \beta$$
+with the same norm constraint. It is a pointwise criterion, not a global one.
+
+The difference is clear if you think of the two classes as having a large number of points in $\mathbb{R}^2$ at $(1,1)$ and $(-1,-1)$ respectively say, and one point from each class near $(0,1)$ and $(0,-1)$.
+The optimal separating hyperplane will be the line $x = 0$, whereas the $D^*$ criterion will be close to the line $y = -x$.
+
+Note that with some slight manipulation of the outlier points, it's entirely possible that $D^*$ would misclassify some of the data even if it were separable.
