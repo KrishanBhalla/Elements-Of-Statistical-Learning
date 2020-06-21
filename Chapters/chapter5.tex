@@ -11,7 +11,7 @@ The basis described for these knots is:
     h_2(X) &= X \\
     h_3(X) &= X^2 \\
     h_4(X) &= X^3 \\
-    h_{4+i}(X) &= (X-\xi_i)^3_+ \hspace{2em}  \forall i \in \{1,\dots,p\} \\
+    h_{4+i}(X) &= (X-\xi_i)^3_+ \hspace{2em} \forall i \in \{1,\dots,p\} \\
 \end{align*}
 
 We must show that given any cubic spline with knots at these places, it can be represented by a linear combination of the above and the representation is unique.
@@ -27,8 +27,63 @@ $g_i$ is a cubic, and so it is clear that $g_i$ must take the form $a_i(X - \xi_
     &=  f_{i}(X)\mathbb{1}_{[\xi_i,\xi_{i+2}]} + a_i(X - \xi_{i+1})^3\mathbb{1}_{[\xi_{i+1},\xi_{i+2}]}
 \end{align*}
 Applying this to each knot, we get:
-$$f(X) = c_1 + c_2 X + c_3 X^2 + c_4 X^4 + \sum_{i=0}^p a_i (X - \xi_{i+1})^3 \mathbb{1}_{[\xi_i,\xi_{i+1}]}$$ 
+
+\begin{align*}
+    f(X) &= c_1 + c_2 X + c_3 X^2 + c_4 X^4 \\
+    &+ \sum_{i=0}^p a_i (X - \xi_{i+1})^3 \mathbb{1}_{[\xi_i,\xi_{i+1}]}
+\end{align*}
+
 For some constants $c_i$. Recasting this slightly gives
-$f(X) = \sum_{i=0}^{p+4} b_i h_i(X)$ for some $b_i$ as required.
+$$f(X) = \sum_{i=0}^{p+4} b_i h_i(X)$$ 
+For some $b_i$ as required.
 
 For linear independence, note that all knots are distinct, and so if any of the $h_i$, $i>4$ can be formed from a linear combination of the others, then left of $\xi_i$ this combination must be zero. However this is an open set and a polynomial either has finitely many roots or is identically zero. Thus we have that the $h_i$ form a basis as required. 
+
+
+\subsection*{5.4 Consider the truncated power series representation for cubic splines with K interior knots. Let
+$$f(X) = \sum_{j=0}^3 \beta_j X^j + \sum_{k=1}^K \theta_k (X - \xi_k)^3_+$$
+Prove that the natural boundary conditions for the natural cubic splines (Section 5.2.1) imply the following linear constraints on the coefficients:
+\begin{align*}
+    \beta_2 &= 0 \\
+    \beta_3 &= 0 \\
+    \sum_{k=1}^K \theta_k &= 0 \\
+    \sum_{k=1}^K \theta_k \xi_k  &= 0
+\end{align*}
+Hence derive the basis (5.4) and (5.5)
+}
+
+$f(X)$ is constrained to be linear for $X <= \xi_1$ and $X >= \xi_k$.
+On the left hand side, this implies that $\beta_2$ and $\beta_3$ are $0$.
+On the right hand side, look at coefficients of the polynomial.
+The $X^3$ term has coefficient $\sum_{k=1}^K \theta_k$, and the $X^2$ term has coefficient $\sum_{k=1}^K \theta_k \xi_k $, which must then both be $0$.
+
+Thus we know that we can remove $h_2$ and $h_3$ in our basis from $Ex 5.1$.
+
+Consider $N_{k+2}(X) = d_k(X) - d_{K-1}(X)$ in the book (5.4). Here the $d_k$ are as in (5.5).
+$$N_{k+2}(X) = \frac{(X - \xi_k)^3_+ - (X - \xi_K)^3_+}{\xi_k - \xi_K} - \frac{(X - \xi_{K-1})^3_+ - (X - \xi_K)^3_+}{\xi_{K-1} - \xi_K}$$
+
+We want to write $\sum_{k=1}^K \theta_k (X - \xi_k)^3_+$ in terms of the $N_{k+2}$
+We will try with some coefficients $a_k$, and see if we can find a solution $\sum_{k=1}^K \theta_k (X - \xi_k)^3_+ = \sum_{k=1}^{K-2} a_k \theta_k N_{k+2}(X)$
+Then:
+\begin{align*}
+    \sum_{k=1}^{K-2}a_k \theta_k N_{k+2}(X) &= \sum_{k=1}^{K-2 }a_k \theta_k \left( d_k(X) - d_{K-1}(X) \right) \\
+    &= \sum_{k=1}^{K-2 }a_k \theta_k \left( \frac{(X - \xi_k)^3_+ - (X - \xi_K)^3_+}{\xi_k - \xi_K} \right) \\ &- \left(\sum_{k=1}^{K-2 }a_k \theta_k \right) \frac{(X - \xi_{K-1})^3_+ - (X  - \xi_K)^3_+}{\xi_{K-1} - \xi_K}
+\end{align*}
+
+To eliminate the denominator, let's try $a_k$ = $\xi_k - \xi_K$
+
+\begin{align*}
+    \sum_{k=1}^{K-2}a_k \theta_k N_{k+2}(X)  &=  \sum_{k=1}^{K-2 }\theta_k \left( (X - \xi_k)^3_+ - (X - \xi_K)^3_+ \right) \\ 
+    &- \left(\sum_{k=1}^{K-2 }(\xi_k - \xi_K) \theta_k \right) \frac{(X - \xi_{K-1})^3_+ - (X  - \xi_K)^3_+}{\xi_{K-1} - \xi_K} \\
+    &=  \sum_{k=1}^{K-2 }\theta_k \left( (X - \xi_k)^3_+ - (X - \xi_K)^3_+ \right)\\
+    &+ (\xi_{K-1}\theta_{K-1} - \xi_{K}\theta_{K-1})  \frac{(X - \xi_{K-1})^3_+ - (X  - \xi_K)^3_+}{\xi_{K-1} - \xi_K}\\
+    &=  \sum_{k=1}^{K-2 }\theta_k (X - \xi_k)^3_+  + (\theta_{K-1} + \theta_K) (X - \xi_K)^3_+\\
+    &+ (\xi_{K-1}- \xi_{K})\theta_{K-1} \frac{(X - \xi_{K-1})^3_+ - (X  - \xi_K)^3_+}{\xi_{K-1} - \xi_K}\\
+    &=  \sum_{k=1}^{K-2 }\theta_k (X - \xi_k)^3_+  + (\theta_{K-1} + \theta_K) (X - \xi_K)^3_+\\
+    &+ \theta_{K-1} (X - \xi_{K-1})^3_+ - \theta_{K-1}(X  - \xi_K)^3_+\\
+    &=  \sum_{k=1}^{K-2 }\theta_k (X - \xi_k)^3_+  + \theta_K (X - \xi_K)^3_+\\
+    &+ \theta_{K-1} (X - \xi_{K-1})^3_+\\
+    &=  \sum_{k=1}^{K }\theta_k (X - \xi_k)^3_+
+\end{align*}
+Where use our $\theta$ conditions from above.
+Thus by setting $a_k = \xi_k - \xi_K$ we can in fact retrieve $f(X)$, and so we have $K$ functions from which any element of the space can be generated. This space has dimension $K$ and so (5.4) must define a basis as required.
