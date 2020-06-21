@@ -1,2 +1,34 @@
 
-\chapter{Chapter 4 - Basis Expansions and Regularisation}
+\chapter{Chapter 5 - Basis Expansions and Regularisation}
+
+\subsection*{5.1 Show that the truncated power basis functions represent a basis for a cubic spline with the two knots as indicated}
+
+We'll prove a more general result for $p$ knots, $\xi_1, \dots, \xi_p$
+The basis described for these knots is:
+
+\begin{align*}
+    h_1(X) &= 1 \\
+    h_2(X) &= X \\
+    h_3(X) &= X^2 \\
+    h_4(X) &= X^3 \\
+    h_{4+i}(X) &= (X-\xi_i)^3_+ \hspace{2em}  \forall i \in \{1,\dots,p\} \\
+\end{align*}
+
+We must show that given any cubic spline with knots at these places, it can be represented by a linear combination of the above and the representation is unique.
+
+With $\xi_0 = -\infty$ and $\xi_{p+1} = \infty$, suppose that we have some piece-wise cubic spline defined by: 
+$$f(X) = \sum_{i=0}^p f_i(X)\mathbb{1}_{[\xi_i,\xi_{i+1}]}$$
+With $f_i(\xi_{i+1}) = f_{i+1}(\xi_{i+1})$, $0 <= i <= p$ and similar for first and second derivatives, each $f_i$ being a cubic.
+Then let $g_i = f_{i+1} - f_i$, and we have $g_i(\xi_{i+1})  = 0$,  $g'_i(\xi_{i+1})  = 0$,  $g''_i(\xi_{i+1})  = 0$
+
+$g_i$ is a cubic, and so it is clear that $g_i$ must take the form $a_i(X - \xi_{i+1})^3$ for some $a_i$. Adding in our indicator functions:
+\begin{align*}
+    & f_i(X)\mathbb{1}_{[\xi_i,\xi_{i+1}]} + f_{i+1}(X)\mathbb{1}_{[\xi_{i+1},\xi_{i+2}]} \\
+    &=  f_{i}(X)\mathbb{1}_{[\xi_i,\xi_{i+2}]} + a_i(X - \xi_{i+1})^3\mathbb{1}_{[\xi_{i+1},\xi_{i+2}]}
+\end{align*}
+Applying this to each knot, we get:
+$$f(X) = c_1 + c_2 X + c_3 X^2 + c_4 X^4 + \sum_{i=0}^p a_i (X - \xi_{i+1})^3 \mathbb{1}_{[\xi_i,\xi_{i+1}]}$$ 
+For some constants $c_i$. Recasting this slightly gives
+$f(X) = \sum_{i=0}^{p+4} b_i h_i(X)$ for some $b_i$ as required.
+
+For linear independence, note that all knots are distinct, and so if any of the $h_i$, $i>4$ can be formed from a linear combination of the others, then left of $\xi_i$ this combination must be zero. However this is an open set and a polynomial either has finitely many roots or is identically zero. Thus we have that the $h_i$ form a basis as required. 
