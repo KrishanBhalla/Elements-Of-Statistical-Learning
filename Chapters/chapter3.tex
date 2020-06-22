@@ -63,7 +63,7 @@ Where the last lines follow as $\tilde{\beta}$ is unbiased. In particular $DX\be
     &= \hat{V} + \sigma^2 \left(\left(X^T X\right)^{-1}X^T D^T  +   D X \left(X^T X\right)^{-1} + D^T D\right) \\
     &= \hat{V} + \sigma^2 D D^T
 \end{align*}
-Where we know that $D D^T$ is positive semi-definite\footnote{$v^T D D^T v = \norm{D^T v} >= 0$ $ \forall v $} and so are done.
+Where we know that $D D^T$ is positive semi-definite\footnote{$v^T D D^T v = \norm{D^T v} \geq 0$ $ \forall v $} and so are done.
 
 
 \subsection*{ 3.4 Show how the vector of least squares coefficients can be obtained
@@ -314,7 +314,7 @@ Which is exactly the required result in vector notation.
 
 b)Explicit form of correlation\\
 
-The question as stated ignores the need for an absolute value, so we shall assume that $\langle x_j, y - u(\alpha)\rangle >= 0$ for every $j$, else replace $x_j$ by $-x_j$ in our data.
+The question as stated ignores the need for an absolute value, so we shall assume that $\langle x_j, y - u(\alpha)\rangle \geq 0$ for every $j$, else replace $x_j$ by $-x_j$ in our data.
 
 Correlations are given by covariance divided by the product of the standard deviations. as everything (data and response) is assumed to be standardised, we have:
 
