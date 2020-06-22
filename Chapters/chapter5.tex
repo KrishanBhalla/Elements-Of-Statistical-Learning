@@ -18,7 +18,7 @@ We must show that given any cubic spline with knots at these places, it can be r
 
 With $\xi_0 = -\infty$ and $\xi_{p+1} = \infty$, suppose that we have some piece-wise cubic spline defined by: 
 $$f(X) = \sum_{i=0}^p f_i(X)\mathbb{1}_{[\xi_i,\xi_{i+1}]}$$
-With $f_i(\xi_{i+1}) = f_{i+1}(\xi_{i+1})$, $0 <= i <= p$ and similar for first and second derivatives, each $f_i$ being a cubic.
+With $f_i(\xi_{i+1}) = f_{i+1}(\xi_{i+1})$, $0 \leq i \leq p$ and similar for first and second derivatives, each $f_i$ being a cubic.
 Then let $g_i = f_{i+1} - f_i$, and we have $g_i(\xi_{i+1})  = 0$,  $g'_i(\xi_{i+1})  = 0$,  $g''_i(\xi_{i+1})  = 0$
 
 $g_i$ is a cubic, and so it is clear that $g_i$ must take the form $a_i(X - \xi_{i+1})^3$ for some $a_i$. Adding in our indicator functions:
@@ -52,12 +52,12 @@ Prove that the natural boundary conditions for the natural cubic splines (Sectio
 Hence derive the basis (5.4) and (5.5)
 }
 
-$f(X)$ is constrained to be linear for $X <= \xi_1$ and $X >= \xi_k$.
+$f(X)$ is constrained to be linear for $X \leq \xi_1$ and $X \geq \xi_k$.
 On the left hand side, this implies that $\beta_2$ and $\beta_3$ are $0$.
 On the right hand side, look at coefficients of the polynomial.
 The $X^3$ term has coefficient $\sum_{k=1}^K \theta_k$, and the $X^2$ term has coefficient $\sum_{k=1}^K \theta_k \xi_k $, which must then both be $0$.
 
-Thus we know that we can remove $h_2$ and $h_3$ in our basis from $Ex 5.1$.
+Thus we know that we can remove $h_2$ and $h_3$ in our basis from Ex 5.1.
 
 Consider $N_{k+2}(X) = d_k(X) - d_{K-1}(X)$ in the book (5.4). Here the $d_k$ are as in (5.5).
 $$N_{k+2}(X) = \frac{(X - \xi_k)^3_+ - (X - \xi_K)^3_+}{\xi_k - \xi_K} - \frac{(X - \xi_{K-1})^3_+ - (X - \xi_K)^3_+}{\xi_{K-1} - \xi_K}$$
@@ -87,3 +87,102 @@ To eliminate the denominator, let's try $a_k$ = $\xi_k - \xi_K$
 \end{align*}
 Where use our $\theta$ conditions from above.
 Thus by setting $a_k = \xi_k - \xi_K$ we can in fact retrieve $f(X)$, and so we have $K$ functions from which any element of the space can be generated. This space has dimension $K$ and so (5.4) must define a basis as required.
+
+\subsection*{5.7 Derivation of smoothing splines. Please see the book. $g$ is a natural cubic spline interpolating $N$ knots $x_i$ $i \in \{1,\dots,N\}$, with values $g(x_i) = z_i$.
+$a$ and $b$ are s.t. $a < x_1 < \dots x_N < b$.}
+\subsection*{a) Let $h$ is the difference between $g$ and another differentiable function that interpolates the pairs $(x_i, z_i)$.}
+
+\begin{align*}
+    \int_a^b g''(x)h''(x) dx &= [g''(x)h'(x)]_a^b - \int_a^b g'''(x) h'(x) dx \\
+    &= [0 \cdot h'(b) - 0 \cdot h'(b)] - \int_{x_1}^{x_N} g'''(x) h'(x) dx \\
+    &= -\sum_{j = 1}^{N-1} \int_{x_j}^{x_{j+1}} g'''(x) h'(x) dx \\
+    \int_{x_j}^{x_{j+1}} g'''(x) h'(x) dx &=  [g'''(x)h(x)]^{x_{j+1}}_{x_j}  - \int_{x_j}^{x_{j+1}} g''''(x) h(x) dx \\
+    &=  [g'''(x)h(x)]^{x_{j+1}}_{x_j}  \\
+    \Rightarrow  \int_a^b g''(x)h''(x) dx &= -\sum_{j = 1}^{N-1} [g'''(x)h(x)]^{x_{j+1}}_{x_j} \\
+    &= 0
+\end{align*}
+The last line following as $h(x_i) = 0$ $\forall i$
+
+
+\subsection*{b) Show that $\int_a^b \tilde{g}''(x)^2  dx \geq \int_a^b g''(x)^2 dx$ with equality only when $h = 0$ on $[a,b]$}
+\begin{align*}
+    0 &= \int_a^b \tilde{g}''(x)^2  dx \\
+    &= \int_a^b \left(g''(x) + h''(x)\right)^2 dx \\
+    &= \int_a^b g''(x)^2  + 2 * g''(x) h''(x) + h''(x)^2 dx\\
+    &= \int_a^b g''(x)^2 dx +  \int_a^b  h''(x)^2 dx \\
+    &\geq \int_a^b g''(x)^2 dx
+\end{align*}
+With the penultimate line following from a), and the final line being an equality only if $ h''$ is identically 0 in $[a,b]$. That is to say $h$ is linear in this interval, but at each $x_i$ h is $0$, and so given at least 2 $x_i$, the last line holds if and only if $h$ is identically $0$ in $[a,b]$ 
+
+
+\subsection*{c) Consider the penalised least squares problem:
+$$ \min_f \left[ \sum_{i=1}^N \left(y_i - f(x_i)\right)^2 + \lambda \int_a^b f''(t)^2 dt \right]$$
+Show that the minimiser must be a cubic spline with knots at each of the $x_i$}
+
+Let $\tilde{f}$ be the minimiser. let $z_i = \tilde{f}(x_i)$ for every $i$. 
+Then we can find a natural cubic spline interpolating these points, $g$ say.
+Thus $\sum_{i=1}^N \left(y_i - \tilde{f}(x_i)\right)^2 = \sum_{i=1}^N \left(y_i - g(x_i)\right)^2$
+
+From b), we know that $\int_a^b \tilde{f}''(t)^2 dt \geq \int_a^b g''(t)^2 dt$, and so $f$ can only be the minimiser if these values are in fact equal.
+Again from b), this only occurs if $h$ is identically $0$ in $[a,b]$, so $\tilde{f} = g$ in $[a,b]$, and the minimiser is a natural cubic spline.
+
+
+\subsection*{5.9 Derive the Reinsch form $S_\lambda = \left(I + \lambda K\right) ^{-1}$ for the smoothing spline.}
+
+We know $S_\lambda = N\left(N^T N + \lambda \Omega_N\right)^{-1}N^T$
+We have a basis as in Ex 5.4, of the form $N_1(X) = 1$, $N_2(X) = X$, and $N_{k+2}(X) = d_k(X) - d_{K-1}(X)$ for $k <= N-2$ where we have $N$ knots. Let the knots be $x_1 < \dots < x_n$
+$d_j(x_i) = 0$ if $j \geq i$, and so our matrix $N$, which has $N_{i,j} = N_j(x_i)$ has all but the first two columns $0$ above the diagonal \footnote{$N_j(x_i) = 0 $ for $i < j$ and $j >= 2$}.
+The first column is all $1$s and the second a column of $x_i$.
+$$
+N = \begin{bmatrix}
+1 & x_1 & 0 & \dots & 0\\
+1 & x_2 & 0 & \dots & 0\\
+1 & x_3 & N_3(x_3) & \dots & 0\\
+\dots & \dots & \dots & \dots & \dots\\
+1 & x_N & N_3(x_N) & \dots & N_N(x_N)\\
+\end{bmatrix}
+$$
+
+We can subtract the first row form the rest to get:
+$$
+N = \begin{bmatrix}
+1 & 0 & 0 & \dots & 0\\
+0 & x_2 - x+1 & 0 & \dots & 0\\
+0 & x_3 - x_1 & N_3(x_3) & \dots & 0\\
+\dots & \dots & \dots & \dots & \dots\\
+0 & x_N - x_1 & N_3(x_N) & \dots & N_N(x_N)\\
+\end{bmatrix}
+$$
+
+Now the determinant of $N$ is the determinant of the submatrix consisting of $N$ less the first row and column.
+This submatrix is lower triangular with a non-zero diagonal (as the $x_i$ are distinct).
+Hence $N$ is invertible.
+
+Then:
+\begin{align*}
+S_\lambda &= N\left(N^T N + \lambda \Omega_N\right)^{-1}N^T  \\
+&= \left((N^T)^{-1} \left( N^T N + \lambda \Omega_N \right) N^{-1}\right)^{-1} \\
+&= \left((N^T)^{-1} N^T N N^{-1} + \lambda (N^T)^{-1} \Omega_N  N^{-1}\right)^{-1} \\
+&= \left(I + \lambda K \right)^{-1} 
+\end{align*}
+Where $K = (N^T)^{-1} \Omega_N  N^{-1}$.
+
+\subsection*{5.12 
+Characterise the solution to the following problem:
+$$ min_f RSS(f, \lambda) = \sum_{i=1}^N w_i \left( y_i - f(x_i)\right)^2 + \lambda \int f''(t)^2 dt $$
+Where the $w_i \geq 0$ are the observation weights. Characterise the solution to the smoothing spline problem when the training data have ties in $X$}
+
+We know that the solution is a natural spline, and will reform the $RSS$ as:
+$$RSS(f, \theta) = \left(Y - N\theta \right)^T W \left(Y - N\theta\right) + \lambda \theta^T \Omega_N \theta$$
+$W$ being a diagonal matrix with $(W)_{i,i} = w_i$.
+Setting the first derivative to zero we get:
+\begin{align*}
+-2 N^T W \left(Y - N\theta\right) + 2 \lambda \Omega_N \theta &= 0\\
+\lambda \Omega_N \theta  &= N^T W \left(Y - N\theta\right)\\
+\left( N^T W N + \lambda \Omega_N\right) \theta &= N^T W Y \\
+ \theta &= \left( N^T W N + \lambda \Omega_N\right)^{-1} N^T W Y 
+\end{align*}
+This is simply the solution to a weighted ridge regression.
+
+Using the Reinsch form, we end up with $S_\lambda = \left( W + \lambda K \right)^{-1}$.
+In the smoothing spline problem with ties, given $K$ values for $x_i$, of which $L$ are unique, we can arrive at the weighted regression above on $L$ parameters (knots), and $N$ having dimension $L x L$.
