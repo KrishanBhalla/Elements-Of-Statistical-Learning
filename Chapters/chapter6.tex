@@ -76,3 +76,40 @@ This condition for selecting the $\beta_j$ is exactly the result of smoothing ea
 \subsection*{6.7 Derive an expression for the leave-one-out cross-validated RSS for local polynomial regression}
 
 $$\frac{1}{N} \sum_{i=1}^N \sum_{j \neq i} K_\lambda(x_j, x_i)^2 \norm{y-x_i^T\beta_j}^2$$
+
+\subsection*{6.8 Suppose that for continuous response $Y$ and predictor $X$, we model the joint density of $X,Y$ using a multivariate Gaussian kernel estimator. Note that the kernel in this case would be the product kernel $\phi_\lambda(X)\phi_\lambda(Y)$. Show that the conditional mean $\mathbb{E}\left[Y\vert X\right]$ derived from this estimate is a Nadaraya-Watson estimator. Extend this result to classification by providing a suitable kernel for the estimation of the joint distribution of a continuous $X$ and discrete $Y$}
+
+\begin{align*}
+    \hat{f}_{X,Y}(x,y) &= \frac{1}{N} \sum_{i=1}^N \phi_\lambda(x-x_i)\phi_Y(y-y_i)\\
+    \hat{f}_{X}(x) &= \frac{1}{N} \sum_{i=1}^N \phi_\lambda(x-x_i)
+\end{align*}
+
+Thus 
+
+\begin{align*}
+    \mathbb{E}\left[Y\vert X\right] 
+    &= \int_{-\infty}^\infty \frac{\hat{f}_{X,Y}(x,y) y}{\hat{f}_{X}(x)} dy \\
+    &= \int_{-\infty}^\infty \frac{\sum_{i=1}^N \phi_\lambda(x-x_i)\phi_\lambda(y-y_i) y }{\sum_{i=1}^N \phi_\lambda(x-x_i)} dy  \\
+    &= \frac{\sum_{i=1}^N \phi_\lambda(x-x_i)\int_{-\infty}^\infty y \phi_\lambda(y-y_i)  dy} {\sum_{i=1}^N  \phi_\lambda(x-x_i)}\\
+    &= \frac{\sum_{i=1}^N \phi_\lambda(x-x_i)\int_{-\infty}^\infty y \phi_\lambda(y-y_i)  dy} {\sum_{i=1}^N  \phi_\lambda(x-x_i)}\\
+    \int_{-\infty}^\infty y \phi_\lambda(y-y_i)  dy
+    &= \int_{-\infty}^\infty (y-y_i) \phi_\lambda(y-y_i)  dy + y_i \int_{-\infty}^\infty  \phi_\lambda(y-y_i)  dy \\
+    &=  \mathbb{E}\left[Y\right]  + y_i \\
+    &= y_i \\
+\Rightarrow  \mathbb{E}\left[Y\vert X\right] &=\frac{\sum_{i=1}^N \phi_\lambda(x-x_i) y_i} {\sum_{i=1}^N  \phi_\lambda(x-x_i)}\\
+\end{align*}
+Thus the conditional expectation is a Nadaraya-Watson estimator.
+
+For classification, let our kernel be $\phi_\lambda(X)\delta_g(Y)$ where:
+$$\twopartdef{\delta_g(y) = 1}{y_i = g}{0}{\text{otherwise}}$$
+
+That is $\hat{f}_{X, Y}(x,y) = \frac{1}{N} \sum_{i=1}^N \phi_\lambda(x-x_i) \delta_y(y_i)$. 
+Then 
+$$\mathbb{P}(Y=y|X=x) = \frac{\sum_{y_i=y} \phi_\lambda(x-x_i)} {\sum_{i=1}^N \phi_\lambda(x-x_i)}$$
+
+This definition makes intuitive sense - in the case where we instead had $X$ as a constant function say, it would be the sample estimate. Once again the expected value becomes a Nadaraya-Watson estimator\footnote{Where we have $j$ classes for the response, $y_1, \dots, y_j$}:
+\begin{align*}
+    \mathbb{E}\left[Y\vert X\right] 
+    &= \frac{\sum_{j = 1}^M \sum_{y_i=y_j} \phi_\lambda(x-x_i) y_i} {\sum_{i=1}^N \phi_\lambda(x-x_i)} \\
+    &= \frac{\sum_{i = 1}^N \phi_\lambda(x-x_i) y_i} {\sum_{i=1}^N \phi_\lambda(x-x_i)} 
+\end{align*}
