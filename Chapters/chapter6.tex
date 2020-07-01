@@ -101,7 +101,7 @@ Thus
 Thus the conditional expectation is a Nadaraya-Watson estimator.
 
 For classification, let our kernel be $\phi_\lambda(X)\delta_g(Y)$ where:
-$$\twopartdef{\delta_g(y) = 1}{y_i = g}{0}{\text{otherwise}}$$
+$$\delta_g(y) = \twopartdef{\delta_g(y) = 1}{y_i = g}{0}{\text{otherwise}}$$
 
 That is $\hat{f}_{X, Y}(x,y) = \frac{1}{N} \sum_{i=1}^N \phi_\lambda(x-x_i) \delta_y(y_i)$. 
 Then 
