@@ -22,8 +22,18 @@
 \usepackage[english]{babel}
 \usepackage{multicol}
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\abs}[1]{\left\vert#1\right\vert}
 \newcommand{\bracket}[1]{\left(#1\right)}
 \newcommand{\brackettranspose}[1]{\bracket{#1}^T}
+\newcommand{\twopartdef}[4]
+{
+	\left\{
+		\begin{array}{ll}
+			#1 & \mbox{if } #2 \\
+			#3 & \mbox{if } #4
+		\end{array}
+	\right.
+}
 
 \begin{document}
 
@@ -35,6 +45,7 @@
 \include{Chapters/chapter3}
 \include{Chapters/chapter4}
 \include{Chapters/chapter5}
+\include{Chapters/chapter6}
 
 
 

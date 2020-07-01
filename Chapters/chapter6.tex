@@ -1,0 +1,78 @@
+
+\chapter{Chapter 6 - Kernel Smoothing Methods}
+
+
+\subsection*{6.1 Show that the Nadaraya-Watson kernel weighted average with fixed metric bandwidth $\lambda$ and a Gaussian kernel is differentiable. What can be said for the Epanechnikov kernel? What can be said for the Epanechnikov kernel with adaptive nearest-neighbour bandwidth $\lambda(x_0)$}
+
+Nadaraya-Watson:
+$$ \hat{f}(x_0) = \frac{\sum_{i=1}^N K_\lambda(x_0,x_i)y_i}{\sum_{i=1}^N K_\lambda(x_0,x_i)}$$
+Gaussian Kernel:
+$$ K_\lambda(x_0, x) = \frac{1}{\lambda \sqrt{2\pi}} \exp\left(-\frac{(x - x_0)^2}{2\lambda^2}\right) $$
+
+Thus $K_\lambda(x_0, x)$ is strictly-positive and differentiable (in $x_0$ say) everywhere, so our denominator is too. Similarly the numerator is a linear combination of smooth functions so is smooth.
+Thus the Nadaraya-Watson kernel weighted average is differentiable everywhere\footnote{A ratio of smooth functions such that the denominator has no zeros is differentiable} as a function of $x_0$.
+
+The Epanechnikov kernel is defined as:
+\begin{align*}
+    K_\lambda(x_0, x) &= D\left(\frac{\abs{x - x_0}}{\lambda}\right) \\
+    D(t) &= \twopartdef{\frac{3}{4}(1-t^2)}{ \abs{t} \leq 1}{0}{\text{otherwise}}
+\end{align*}
+Now note that differentiating piecewise gives:
+$$ \frac{\partial D(t)}{\partial t} = \twopartdef{-\frac{3}{2}t}{ \abs{t} \leq 1}{0}{\text{otherwise}} $$
+
+In particular, taking limits as $t \rightarrow 1$ from above and below gives that $D(t) = -\frac{3}{2}$ and $D(t) = 0$ respectively, and so $D$ is not differentiable. 
+For $t = \frac{\abs{x - x_0}}{\lambda(x_0)}$,we have:
+
+$$\frac{\partial K_\lambda(x_0, x)}{\partial x_0} = \frac{\partial D}{\partial t} \frac{\partial t}{\partial x_0} $$
+This will always have issues where $t = 1$, even if $\lambda$ is differentiable in $x_0$.
+
+\subsection*{6.2 Show that $\sum_{i=1}^N (x_i - x_0) l_i(x_0) = 0$ for local linear regression.
+Define $b_j(x_0) =  \sum_{i=1}^N (x_i - x_0)^j l_i(x_0)$. Show that $b_0(x_0) = 1$ for local polynomial regression of any degree. Show that $b_j(x_0) = 0$ for $0 < j \leq k$ for local polynomial regression of degree $k$. What are the implications of this on the bias?}
+
+Let $l(x_0) = [l_1(x_0), \dots , l_N(x_0)]^T$. Then using the notation of subsection 6.1.1, in particular (6.8), we have:
+$$ l(x_0)^T = b(x_0)^T \left(B^T W(x_0) B \right)^{-1} B^T W(x_0)$$
+Where $W$ is the diagonal matrix of kernel weights (i.e. $K_\lambda(x_0, x_i)$ and $B$ being the $N\times (N+1)$ matrix with $i$th row $b(x_i)^T = [1,x,x^2,\dots,x^N]$
+
+Thus 
+\begin{align*}
+    l(x_0)^T B &= [\sum_{i=1}^N l_i(x_0), \sum_{i=1}^N l_i(x_0) x_i , \dots, \sum_{i=1}^N l_i(x_0) x_i^N ] \\
+    l(x_0)^T B &= b(x_0)^T \\
+    &= [1, x_0, \dots, x_0^N]
+\end{align*}
+
+Comparing element-wise we see that $\sum_{i=1}^N l_i(x_0) = 1$ and $\sum_{i=1}^N l_i(x_0) x_i^j = x_0^j$.
+Thus $\sum_{i=1}^N l_i(x_0) (x_i - x_0) = 0$ and $b_0(x_0) = 1$.
+Lastly:
+\begin{align*}
+    b_j(x_0) &= \sum_{i=1}^N (x_i - x_0)^j l_i(x_0) \\
+    &= \sum_{i=1}^N \sum_{k=0}^j {j \choose k} (-1) ^{j-k} x_0^{j-k} x_i^k l_i(x_0) \\
+    &= \sum_{k=0}^j {j \choose k} (-1) ^{j-k} x_0^{j-k} \sum_{i=1}^N x_i^k l_i(x_0) \\ 
+    &= \sum_{k=0}^j {j \choose k} (-1) ^{j-k} x_0^{j-k} x_0^k \\ 
+    &= (x_0 - x_0)^j \\
+    &= 0
+\end{align*}
+
+This suggests to bias is $0$ to order $k$ (i.e. if $y$ is really a polynomial in $x$ of degree at most $k$, the model is unbiased).
+
+\subsection*{6.5 Show that fitting a locally constant multinomial logit model of the form (6.19) amounts to smoothing the binary response indicators for each class separately using a Nadaraya-Watson kernel smoother with kernel weights $K_\lambda(x_0, x_i)$}
+
+(6.19) The local log-likelihood for class $j$ under a locally constant multinomial logit model is:
+$$ \sum_{i=1}^N K_\lambda (x_0, x_i) \left( \beta_j(x_0) - \log\left( 1 + \sum_{j=1}^{J-1} \exp{\beta_j(x_0)}\right) \right)$$
+
+In particular, writing $y_{i,j} = \delta_{y_i, g_j}$ for the function that is $1$ if the $i$th observation is in class $j$ and $0$ otherwise\footnote{This is an explicit form of the binary response indicator vector}, we can get:
+$$l(\beta) = \sum_{i=1}^N K_\lambda (x_0, x_i) \left( \sum_{j=1}^{J-1} \beta_j(x_0) y_{i,j} - \log\left( 1 + \sum_{j=1}^{J-1} \exp{\beta_j(x_0)}\right) \right)$$
+
+We also have:
+$$p_j = \mathbb{P}(G = j \vert X = x) = \frac{\exp(\beta_j)}{1+\sum_{j=1}^{J-1} \exp(\beta_j}$$
+
+Differentiating w.r.t $\beta_j$ and setting the result to $0$ we get:
+\begin{align*}
+   \frac{\partial l(\beta)}{\partial \beta_j} &= \sum_{i=1}^N K_\lambda(x_0, x_i) \left(y_{i,j} - \frac{\exp(\beta_j)}{1+\sum_{j=1}^{J-1} \exp(\beta_j}\right) \\
+   &= \sum_{i=1}^N K_\lambda(x_0, x_i) \left(y_{i,j} - p_j\right) \\
+   \Rightarrow p_j &= \frac{ \sum_{i=1}^N K_\lambda(x_0, x_i) y_{i,j} } {\sum_{i=1}^N K_\lambda(x_0, x_i) }
+\end{align*} 
+This condition for selecting the $\beta_j$ is exactly the result of smoothing each class separately under a Nadaraya-Watson kernel smoother.
+
+\subsection*{6.7 Derive an expression for the leave-one-out cross-validated RSS for local polynomial regression}
+
+$$\frac{1}{N} \sum_{i=1}^N \sum_{j \neq i} K_\lambda(x_j, x_i)^2 \norm{y-x_i^T\beta_j}^2$$

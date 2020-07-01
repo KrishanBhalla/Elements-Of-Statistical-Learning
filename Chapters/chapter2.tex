@@ -42,7 +42,7 @@ This defines a curve in the plane separating the two classes.
 Setup: Consider $N$ data points uniformly distributed in a $p$-dimensional unit ball around the origin. Consider a nearest neighbour estimate at the origin. The median distance from the origin to the closest point is given by:
 $$ d(p_N) = \left(1 - \frac{1}{2}^{1/N}\right)^{1/p} $$
 
-Solution: Let $x$ be a point and let $y = \norm{x}$.
+Let $x$ be a point and let $y = \norm{x}$.
 $y$ has cdf equal to the ratio of a ball of radius $y$ to a ball of radius $1$, i.e. $F(y) = y^p$. The minimum over all $x$ then has cdf $F_{ymin}(y) = 1 - \left(1 - F(y)\right)^N$ (a general fact for order statistics). 
 Thus $F_{ymin} = 1 - \left(1 - y^p\right)^N$.
 
