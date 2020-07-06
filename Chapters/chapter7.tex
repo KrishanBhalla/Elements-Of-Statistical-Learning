@@ -1,0 +1,170 @@
+
+\chapter{Chapter 7 - Model Assessment and Selection}
+
+\subsection*{7.1 Derive the estimate of in-sample error (7.24): 
+$$ \mathbb{E}_y\left(Err_{in}\right) = \mathbb{E}_y\left(\overline{err}\right) + 2 \cdot \frac{d}{N} \sigma_\epsilon^2$$
+}
+
+We start from (7.22): 
+$$ \mathbb{E}_y\left(Err_{in}\right) = \mathbb{E}_y\left(\overline{err}\right) + \frac{2}{N} \sum_{i=1}^N Cov(y_i, \hat{y}_i)$$
+
+Now note that $\sum_{i=1}^N Cov(y_i, \hat{y}_i) = tr(Cov(y, \hat{y}))$, and all we wish to show is that this equals $d \sigma_\epsilon^2$ when fitting a linear model with $d$ predictors.
+
+\begin{align*}
+    Cov(y, \hat{y}) &= Cov(y, X (X^T X)^{-1} X^T y)\\
+     &= X (X^T X)^{-1} X^T Cov(y, y)\\
+     &= X (X^T X)^{-1} X^T \sigma_\epsilon^2\\
+    tr( Cov(y, \hat{y}) ) &= tr( X (X^T X)^{-1} X^T) \sigma_\epsilon^2 \\
+    &= tr(  X^T X (X^T X)^{-1}) \sigma_\epsilon^2 \\
+    &= tr( I_d) \sigma_\epsilon^2 \\
+    &= d \sigma_\epsilon^2 
+\end{align*}
+
+
+\subsection*{7.2 Please see the book.}
+\subsection*{a) Here $\mathbb{P}(Y = 1 | x_0) = f(x_0)$}
+Let $p =\mathbb{P}(\hat{G}(x_0) = G(x_0))  $.
+\begin{align*}
+    Err(x_0) &= \mathbb{P}(Y \neq \hat{G}(x_0)\vert X = x_0) \\
+     &= \mathbb{P}(Y \neq G(x_0)\vert X = x_0)\cdot p  
+     +  \mathbb{P}(Y = G(x_0)\vert X = x_0) \cdot (1-p)\\
+     &= \mathbb{P}(Y \neq G(x_0)\vert X = x_0)\cdot p  
+     +  \mathbb{P}(Y = G(x_0)\vert X = x_0) \cdot (1-p) \\
+     & + \mathbb{P}(Y \neq G(x_0)|X=x_0) \cdot ((1-p)-(1-p))\\
+     &= \mathbb{P}(Y \neq G(x_0)\vert X = x_0) \cdot 1 \\
+     &+  \left(\mathbb{P}(Y = G(x_0)\vert X = x_0)  -\mathbb{P}(Y \neq G(x_0)|X=x_0)\right) \cdot (1-p) \\
+     &= Err_B(x_0) \\
+     &+ \left(\mathbb{P}(Y = G(x_0)\vert X = x_0)  -\mathbb{P}(Y \neq G(x_0)|X=x_0)\right) \cdot (1-p) \\
+     &= Err_B(x_0) + \twopartdef{\left(2 f(x_0) - 1\right) \mathbb{P}(\hat{G}(x_0) \neq G(x_0))}{G(x_0) = 1}{\left(1 - 2 f(x_0)\right) \mathbb{P}(\hat{G}(x_0) \neq G(x_0))}{G(x_0) = 0} 
+\end{align*}
+Now $G(x_0) = 1 \iff f(x_0) \geq 0.5 \iff \left(2\cdot f(x_0) - 1\right) > 0$.
+Thus the last expression simplifies to:
+$$Err_B(x_0) + \abs{2\cdot f(x_0) - 1} \cdot \mathbb{P}(\hat{G}(x_0) \neq G(x_0))$$
+
+\subsection*{b)}
+Let $\sigma = \sqrt{Var(f(x_0))}$ and let $\mu =  \mathbb{E}(\hat{f}(x_0))$. If$G(x_0) = 1$:
+\begin{align*}
+    \mathbb{P}(\hat{G}(x_0) \neq G(x_0)) &=  \twopartdef{\mathbb{P}(\hat{f}(x_0) < 0.5)}{G(x_0) = 1}{\mathbb{P}(\hat{f}(x_0) > 0.5)}{G(x_0) = 0} \\
+    &\approx \twopartdef{\Phi\left(\frac{0.5 - \mu}{\sigma}\right)}{G(x_0) = 1}{1 - \Phi\left(\frac{0.5 - \mu}{\sigma}\right)}{G(x_0) = 0} \\
+    &=  \twopartdef{\Phi\left(\frac{0.5 - \mu}{\sigma}\right)}{G(x_0) = 1}{\Phi\left(\frac{mu - 0.5}{\sigma}\right)}{G(x_0) = 0} \\
+    &= \Phi\left(\frac{sign(0.5 - f(x_0))(\mu - 0.5)}{\sigma}\right)
+\end{align*} 
+As required.
+
+\subsection*{7.3. Please see the book. Linear smoothing of $y$}
+\subsection*{a)}
+
+$\hat{f} = Sy$ is a linear smoothing of $y$. $x_i$ is a column vector, and $X = [x_1, \dots, x_N]^T$.
+$S = X (X^T X)^{-1} X^T$
+
+$$\hat{f}^{-i}(x_i) = x_i^T (X^T X - x_i x_i^T)^{-1}\left(X^T y - x_i y_i\right)  $$
+
+We use the following result:
+$$(I + uv^T)^{-1} = I - \frac{uv^T}{1 + v^Tu}$$
+This is verifiable by setting $A = (I + uv^T) $ and $B  I - \frac{uv^T}{1 + v^T u}$ for some column vectord $u, v$ with $v^T u \neq -1$, then checking that $AB = BA = I$.
+
+Now $X^T X - x_i x_i^T = X^T X ( 1 - (X^T X)^{-1} x_i x_i^T)$. Hence:
+\begin{align*}
+    \left( X^T X + x_i x_i^T\right) ^{-1} &= ( 1 - (X^T X)^{-1} x_i x_i^T)^{-1} (X^T X)^{-1} \\
+    &= ( I - (X^T X)^{-1} x_i x_i^T)^{-1} (X^T X)^{-1} \\
+    &= \left(I + \frac{(X^T X)^{-1}x_i x_i^T}{1 - x_i^T (X^T X)^{-1}x_i}\right)(X^T X)^{-1} \\
+    &= (X^T X)^{-1} + \frac{(X^T X)^{-1}x_i x_i^T (X^T X)^{-1} }{1 - x_i^T (X^T X)^{-1}x_i}\\
+    &= (X^T X)^{-1} + \frac{(X^T X)^{-1}x_i x_i^T (X^T X)^{-1} }{1 - S_{ii}}\\
+     \hat{f}^{-i}(x_i) &=  x_i (X^T X)^{-1} X^T y\\
+     &+ x_i^T \frac{(X^T X)^{-1}x_i x_i^T (X^T X)^{-1} }{1 - S_{ii}}X^T y\\
+     &- x_i^T (X^T X)^{-1} x_i y_i\\
+     &- x_i^T \frac{(X^T X)^{-1}x_i x_i^T (X^T X)^{-1} }{1 - S_{ii}}x_i y_i\\
+     &=  \hat{f}(x_i) + \frac{S_{ii}}{1 - S_{ii}} \hat{f}(x_i)\\
+     &- S_{ii} y_i - \frac{S_{ii}^2}{1 - S_{ii}} y_i\\
+     &=  \hat{f}(x_i) + \frac{S_{ii}}{1 - S_{ii}} \hat{f}(x_i) - \frac{S_{ii}}{1 - S_{ii}} y_i\\
+     &= \frac{1}{1 - S_{ii}} \hat{f}(x_i) - \frac{S_{ii}}{1 - S_{ii}} y_i
+\end{align*}
+
+So:
+\begin{align*}
+y_i - \hat{f}^{-i}(x_i) &= y_i - \left(\frac{1}{1 - S_{ii}} \hat{f}(x_i) - \frac{S_{ii}}{1 - S_{ii}} y \right) \\
+&= -\frac{1}{1 - S_{ii}} \hat{f}(x_i) + y_i + \frac{S_{ii}}{1 - S_{ii}} y_i \\
+&= -\frac{1}{1 - S_{ii}} \hat{f}(x_i) + \frac{1}{1 - S_{ii}} y_i\\
+&=  \frac{1}{1 - S_{ii}} \left(y_i - \hat{f}(x_i)\right)
+\end{align*}
+
+With smoothing splines, we have $S = N^T(N^T N + \lambda \Omega)^{-1} N$, and a similar trick can be pulled using $N^T N + \lambda \Omega$ in place of $X^T X$ and adjusting appropriately.
+
+\subsection*{b)}
+
+Under OLS, $S$ is symmetric and idempotent so\footnote{Consider that $S_{i,j} = (S^2)_{i,j}$ and explore the expanson when looking at the diagonal.} $0 \leq S_{ii} \leq 1$ for every $i$.
+Thus $\abs{y_i - \hat{f}^{-i}(x_i)} \geq \abs{y_i - \hat{f}(x_i)}$
+
+
+
+\subsection*{c)}
+Unsolved.
+
+\subsection*{7.4 Model Optimism. Please see the book, p258}
+
+We will use the following (substituting $Y_i^0$ as $y_i$ to clear up notation). and writing $\hat{y}_i$ for $\hat{f}(x_i)$ :
+$$ y_i - \hat{y}_i = (y_i - f(x_i)) + (f(x_i) - \mathbb{E}\hat{y}_i)  + (\mathbb{E}\hat{y}_i - \hat{y}_i)$$
+
+\begin{align}
+    (y_i - \hat{y}_i)^2 &=  (y_i - f(x_i))^2\\
+    & +  (f(x_i) - \mathbb{E}(\hat{y}_i))^2\\
+    & +  ( \hat{y}_i - \mathbb{E}\hat{y}_i)^2\\
+   & +  2  (  \mathbb{E}\hat{y}_i - \hat{y}_i) (f(x_i) - \mathbb{E}(\hat{y}_i))\\
+   & +  2  (  \mathbb{E}\hat{y}_i - \hat{y}_i)  (y_i - f(x_i))\\
+   & +  2  (f(x_i) - \mathbb{E}(\hat{y}_i)) ) (y_i - f(x_i))
+\end{align}
+
+When we look at $\mathbb{E} \left( Err_{in} - \overline{err} \right)$, we will have many terms vanish - in particular (17), (18), and (19) will be the same for each side, and so will disappear in the difference.
+
+Term (16) captures the error inherent in the model - $y$ truly has the form $f(X) + \epsilon$, so under the expectation (16) will become the variance of $\epsilon$, independent of whether we use $y$ or $Y^0$.
+Hence this vanishes in the difference too.
+Term (21) has expectation $0$, as the left part is unchanged under expectation, but $\mathbb{E}(y_i - f(x_i)) = \mathbb{E}{\epsilon_i} = 0$
+
+Thus we are left with:
+$$\mathbb{E} \left( Err_{in} - \overline{err} \right) = \frac{2}{N}\mathbb{E}\sum_i(\mathbb{E}\hat{y}_i - \hat{y}_i)\left[ (\mathbb{E}_{Y^0}( Y^0_i - f(x_i)) - (y_i - f(x_i))\right]$$
+
+The first term on the in the square brackets vanishes as $\mathbb{E}_{Y^0}(Y^0_i) = f(x_i)$, and the second term is equal to $y_i - \mathbb{E}y_i$.
+
+Hence:
+\begin{align*}
+    \mathbb{E} \left( Err_{in} - \overline{err} \right) &= -\frac{2}{N}\sum_i(\mathbb{E}\hat{y}_i - \hat{y}_i)\mathbb{E} \left(y_i -\mathbb{E} y_i\right) \\
+    &= \frac{2}{N}\sum_i(\hat{y}_i - \mathbb{E}\hat{y}_i) \mathbb{E} \left(y_i - \mathbb{E} y_i\right) \\
+    &= \frac{2}{N}\sum_i Cov(\hat{y}_i, y_i)
+\end{align*}
+
+\subsection*{7.5 For a linear smoother $\hat{y} = Sy$ show that 
+$$\sum_i Cov(\hat{y}_i, y_i) = tr(S) \sigma_\epsilon^2$$
+which justifies its use as the effective number of parameters.
+}
+
+\begin{align*}
+    \sum_i Cov(\hat{y}_i, y_i) &= tr(Cov(\hat{y}, y)) \\
+     &= tr(Cov(Sy, y)) \\
+     &= tr(S Cov(y, y)) \\
+     &= tr(S Var(y)) \\
+     &= tr(S) \sigma_\epsilon^2\\
+\end{align*}
+
+\subsection*{Show that for the additive error model, the effective degrees-of-freedom for the k-nearest-neighbours regression fit is $N/k$}
+
+Under this model, $S$ is a binary matrix with values $1/k$ or 0, such that each row sums to $1$ and the diagonal entries are all $1/k$. This thus has trace $N/k$, which by 7.5 is our effective degrees-of-freedom.
+
+\subsection*{7.7 Use the Taylor expansion of $1/(1-x)^2$ to expose the relationship between $C_p$ and GCV. The main difference being the model used to estimate the noise variance $\sigma_\epsilon^2$}
+
+\begin{align*}
+    GCV &= \frac{1}{N} \sum_i \left[ \frac{y_i - \hat{y}_i}{1 - tr(S) / N}\right]^2 \\
+    &= \frac{1}{N} \sum_i \left( y_i - \hat{y}_i\right)^2 \left( 1 + 2 \frac{tr(S)}{N} \right)\\
+    &= \frac{1}{N} \left( 1 + 2 \frac{d}{N} \right) \sum_i \left( y_i - \hat{y}_i\right)^2 \\
+    &= \frac{1}{N}\sum_i \left( y_i - \hat{y}_i\right)^2  + 2 \frac{d}{N^2}  \sum_i \left( y_i - \hat{y}_i\right)^2 \\
+    &= \overline{err}  + 2 \frac{d}{N^2}  \sum_i \left( y_i - \hat{y}_i\right)^2\\
+    &\approx \overline{err}  + 2 \frac{d}{N^2}  N \sigma_\epsilon^2\\
+    &= \overline{err}  + 2 \frac{d}{N} \sigma_\epsilon^2 \\
+    &= C_p
+\end{align*}
+
+\subsection*{Show that the set of functions $\{I(\sin{\alpha x} > 0)\}$ can shatter the following points on the line:
+$$\{z^i = 10^{-i} \vert i \in \{1, \dots, l\} \}$$
+Hence the VC dimension of this class is infinite.}
+
+Pick any $i$. Then the distance from $z^l$ to $z^{i-1}$ is $9 z^i$. We just need a function that can separate these, and hence can find functions for any $i$. Then take $\alpha = 10^i \pi$. $\sin{x}$ crosses the axis at multiples of $pi$, so $\sin{\alpha x}$ crosses the axis at every $10^{-i}$. Hence our indicator function will cross the axis between  $z^l$ and $z^{i-1}$ (multiple times infact!).
+Hence the functions can shatter arbitrarily long sequences of points on the line as required.
