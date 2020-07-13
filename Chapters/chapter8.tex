@@ -1,0 +1,121 @@
+\chapter{chapter 8 - Model Inference and Averaging}
+
+\subsection*{Notes on the text. P 269, deriving the posterior distribution for $\beta$.
+This seems like a useful derivation}
+
+We assume that $\beta \sim N(0, \tau\Sigma)$, and have the model $y = H \beta + \epsilon$, where $\epsilon \sim N(0, \sigma^2)$. From here we get:
+$$ y\vert\beta \sim N(H\beta, \sigma^2 I)$$
+Then:
+
+\begin{align*}
+f(\beta \vert y) &\propto f(\beta) f(y \vert \beta)\\Bloomberg15
+
+l(\beta | y) &= c + l(\beta) + l(y \vert \beta) \\
+&= c - \frac{1}{2\tau} \beta^T \Sigma^{-1}\beta + \log{\frac{1}{\sqrt{2 \pi \tau \abs{\Sigma}}}} \\ 
+&-  \frac{1}{2\sigma^2} (y - H\beta)^T  (y - H\beta) + \log{\frac{1}{\sqrt{2\pi} \sigma}}\\ 
+&= c - \frac{1}{2\sigma^2} (y - H\beta)^T  (y - H\beta) - \frac{1}{2\tau} \beta^T \Sigma^{-1}\beta \\ 
+&= c - \frac{1}{2} \left( \frac{1}{\sigma^2} y^T y +\frac{1}{\sigma^2}  \beta^T H^T  H\beta - \frac{2}{\sigma^2}  \beta^T H^T y\right) - \frac{1}{2\tau} \beta^T \Sigma^{-1}\beta  \\
+&= c - \frac{1}{2} \left( \beta^T \left(\frac{1}{\sigma^2}H^T  H + \frac{1}{\tau}\Sigma^{-1}\right) \beta - \frac{2}{\sigma^2} \beta^T H^T y \right) 
+\end{align*}
+
+Where we have absorbed terms not involving $\beta$ into $c$ at various points.
+Let $\Lambda = H^T H + \frac{\sigma^2}{\tau}\Sigma^{-1}$
+
+\begin{align*}
+    \frac{1}{\sigma^2} \left(\beta^T \Lambda \beta - 2 y^T  H \beta \right) &= \frac{1}{\sigma^2} \left(\beta^T \Lambda \beta - 2 \beta^T H^T y\right)\\
+    &= \frac{1}{\sigma^2} (\beta - \Lambda^{-1}  H^T y)^T \Lambda(\beta - \Lambda^{-1}  H^T y) + c
+\end{align*}  
+
+Again using a constant $c$ to absorb non-$\beta$ terms.
+Knowing that our result is to be a normal distribution, one can fill in the details for constants to recover that:
+\begin{align*}
+    \mathbb{E}\left[\beta\vert Z\right] = \Lambda^{-1}  H^T y\\
+    Cov\left[\beta\vert Z\right] = \Lambda^{-1} \sigma^2
+\end{align*}
+This is very similar to an earlier exercise on posterior probabilities, except we now have a more general covariance matrix. 
+
+\subsection*{8.1. Let $r(y)$ and $q(y)$ be probability density functions. Jensen's inequality states that for a random variable $X$ and a convex function $\phi(x)$, $\mathbb{E}\left[\phi(X)\right] \geq \phi\left(\mathbb{E}\left[ X \right] \right)$.
+Use Jensen's inequality to show that:
+$$\mathbb{E}_q \log \left[ \frac{r(Y)}{q(Y)}\right] $$ 
+is maximised as a function of $y(y)$ when $r(y) = q(y)$. Hence show that $R(\theta, \theta) \geq R(\theta', \theta)$ as stated below equation (8.46)
+}
+
+$\log$ is concave, so
+\begin{align*}
+    \mathbb{E}_q \log \left[ \frac{r(Y)}{q(Y)}\right] &\leq \log \mathbb{E}_q \left[\frac{r(Y)}{q(Y)}\right] \\ 
+    &= \log \int \frac{r(Y)}{q(Y)} dq \\ 
+    &= \log \int \frac{r(Y) }{q(Y)} q(y) dy \\
+    &= \log(1) \\
+    &= 0
+\end{align*}
+Equality holds iff $r(y) = q(y)$. Thus:
+\begin{align*}
+    R(\theta', \theta) - R(\theta, \theta) &= \mathbb{E}_{T|Z, \theta}\left[\log \mathbb{P}\left(Z^m|Z, \theta'\right) - \log \mathbb{P}\left(Z^m|Z, \theta\right)\right] \\
+    &= \mathbb{E}_{T|Z, \theta}\left[\log \frac{\mathbb{P}\left(Z^m|Z, \theta'\right)}{ \mathbb{P}\left(Z^m|Z, \theta \right)}\right] \\
+    &\leq 0
+\end{align*}
+Where the last line follows from the previous part of the question, and equality holds iff $R(\theta, \theta) = R(\theta', \theta)$
+
+\subsection*{Consider the maximisation of the log-likelihood (8.48), over distributions $\tilde{P}(Z^m) \geq 0$ and $\sum_{Z^m} \tilde{P}(Z^m) = 1$. Use Lagrange multipliers to show that the solution is the conditional distribution $\tilde{P}(Z^m) =\mathbb{P}(Z^m \vert Z, \theta')$ as in (8.49)}
+
+\begin{align*}
+    F(\theta', \tilde{P}) &= \mathbb{E}_{\tilde{P}}\left[l_0 \left(\theta'; T\right)\right] - \mathbb{E}_{\tilde{P}}\left[\log \tilde{P}(Z^m) \right] \\
+    &= \sum_{Z^m} \left[\log\left(\mathbb{P}(Z^m \vert Z, \theta') \mathbb{P}(Z\vert \theta')\right) - \log\left(\tilde{P}(Z^m)\right)\right] \tilde{P}(Z^m) \\
+    &= \sum_{Z^m} \log\left(\frac{\mathbb{P}(Z^m \vert Z, \theta') \mathbb{P}(Z\vert \theta')}{\tilde{P}(Z^m)}\right)  \tilde{P}(Z^m)  \\
+    &= \log\left(\mathbb{P}(Z\vert \theta')\right) + \sum_{Z^m} \log\left(\frac{\mathbb{P}(Z^m \vert Z, \theta') }{\tilde{P}(Z^m)}\right)  \tilde{P}(Z^m) 
+\end{align*}
+Let $x$ be any observation of $\tilde{P}(Z^m)$. We have
+\begin{align*}
+    g(x, \lambda) &=  \sum_{Z^m} \log\left(\frac{\mathbb{P}(Z^m \vert Z, \theta') }{\tilde{P}(Z^m)}\right) \tilde{P}(Z^m)  - \lambda \left(\sum_{Z^m} \tilde{P}(Z^m) - 1\right)\\
+    \frac{\partial g(x, \lambda)}{\partial x} &= 0 + \frac{ \partial \log\left(\frac{\mathbb{P}(Z^m \vert Z, \theta') }{x} \right) x}{\partial x} - \lambda\\
+     &= \log \frac{\mathbb{P}(Z^m \vert Z, \theta') }{x} -1 - \lambda\\
+     &= 0 \\
+    \Rightarrow x &= \exp\left(-1-\lambda\right)\mathbb{P}(Z^m \vert Z, \theta') 
+\end{align*}
+Now taking partial derivatives w.r.t $\lambda$ gives $\sum_{Z^m} x = 1$
+Hence:
+$$\exp\left(-1-\lambda\right) = 1$$
+Thus $x = \mathbb{P}(Z^m \vert Z, \theta')$, but also $x = \tilde{P}(Z^m)$ as it was an observation, recovering the result.
+
+\subsection*{8.3 Justify the estimate (8.50)}
+\begin{align*}
+\widehat{\mathbb{P}_{U_k}(u)} &= \int \mathbb{P}(u\vert u_l, l\neq k) d(\mathbb{P}(u_l)) \\
+&= \int \mathbb{P}(u\vert u_l, l\neq k)\mathbb{P}(u_l) du_l \\
+&\approx \sum_m^M \mathbb{P}(u\vert u_l, l\neq k) \frac{\sum_{l\neq k} \mathbb{1}_{U_l^{(t)} = u_l}}{M - m + 1} \\
+&= \frac{1}{M - m + 1} \sum_m^M \mathbb{P}(u \vert U_l^{(t)}, l\neq k) 
+\end{align*}
+
+\subsection*{8.4 Bagging reduces variance, please see the book}
+From (8.7), we have:
+$$\hat{\mu}^*(x) \sim N(\hat{\mu}(x), h(x)^T (H^T H)^{-1}h(x) \hat{\sigma}^2)$$
+
+Let $\hat{\Sigma}(x) = h(x)^T (H^T H)^{-1}h(x) \hat{\sigma}^2$
+
+Then using the fact that different bootstraps are independent:
+\begin{align*}
+    \hat{f}_{bag} &= \frac{1}{B} \sum_{b} \hat{f}^*_b(x) \\
+     &\sim N(\hat{\mu(x)}, \frac{B}{B^2} \hat{\Sigma}(x)) \\
+     &= N(\hat{f(x)}, \frac{1}{B} \hat{\Sigma}(x))\\
+     &\xrightarrow{B\to\infty} \hat{f}(x)
+\end{align*}
+
+\subsection*{8.7 EM as a Majorization-Minorization algorithm. Please see the textbook.}
+
+
+\begin{align*}
+    l(\theta'; Z) &= Q(\theta', \theta) - R(\theta', \theta) \\
+    &\geq Q(\theta', \theta) - R(\theta, \theta) \\
+   &= Q(\theta', \theta) - \mathbb{E}_{T|Z, \theta}\left[\log \mathbb{P}\left(Z^m|Z, \theta\right)\right]\\
+   &= Q(\theta', \theta) - \mathbb{E}_{T|Z, \theta}\left[\log \frac{\mathbb{P}\left(T|\theta\right)}{\mathbb{P}\left(Z|\theta\right)}\right] \\
+   &= Q(\theta', \theta) + \mathbb{E}_{T|Z, \theta}\left[\log \mathbb{P}\left(Z|\theta\right)\right]- \mathbb{E}_{T|Z, \theta}\left[\log \mathbb{P}\left(T|\theta\right)\right]\\
+   &= Q(\theta', \theta) + \log \mathbb{P}\left(Z|\theta\right) - Q(\theta, \theta)
+\end{align*}
+In short:
+\begin{align}
+l(\theta'; Z) \geq Q(\theta', \theta) + \log \mathbb{P}\left(Z|\theta\right) - Q(\theta, \theta)
+\end{align}
+With equality holding only for $\theta = \theta'$. Thus the RHS (22) of minorizes $l(\theta'; Z)$.
+
+In step 3 of the EM algorithm (Algorithm 8.2), we maximise $Q$ over $\theta'$. This is equivalent to maximising (22) over $\theta'$.
+Now in general if $g(x,y)$ minorizes $f(x)$, under the update $x^{s+1} = argmax_x g(x,x^s)$,
+we have that $f(x^{s+1}) \geq g(x^{s+1},x^s)\geq g(x^s,x^s) = f(x)$, and so the update in step 3 of the EM algorithm uses (22)  to minorize the log likelihood and force it to increase until $\theta = \theta'$, as this is where equality holds.

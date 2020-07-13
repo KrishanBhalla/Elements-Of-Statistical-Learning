@@ -116,7 +116,7 @@ Hence:
 \begin{align}
     f(\beta\vert y) &\propto f(\beta) f(y\vert \beta) \\
     log(f(\beta\vert y)) &= C + log(f(\beta)) + log(f(y\vert \beta)) \\
-     &= C + -\frac{1}{2\tau}\beta^T \beta * log\left(\frac{1}{\sqrt{2*\pi*\tau}}\right)\\ &-\frac{1}{2\sigma^2}\left(y - X\beta\right) ^T \left(y - X\beta\right) *  log\left(\frac{1}{\sqrt{2*\pi*\sigma^2}}\right) \\ 
+     &= C + -\frac{1}{2\tau}\beta^T \beta + log\left(\frac{1}{\sqrt{2*\pi*\tau}}\right)\\ &-\frac{1}{2\sigma^2}\left(y - X\beta\right) ^T \left(y - X\beta\right)  +   log\left(\frac{1}{\sqrt{2*\pi*\sigma^2}}\right) \\ 
      &= C + -\frac{1}{2\tau}\beta^T \beta  +  -\frac{1}{2\sigma^2}\left(y - X\beta\right) ^T \left(y - X\beta\right)
 \end{align}
 Where we absorb terms into the constant as needed. 

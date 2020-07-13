@@ -166,5 +166,5 @@ Under this model, $S$ is a binary matrix with values $1/k$ or 0, such that each 
 $$\{z^i = 10^{-i} \vert i \in \{1, \dots, l\} \}$$
 Hence the VC dimension of this class is infinite.}
 
-Pick any $i$. Then the distance from $z^l$ to $z^{i-1}$ is $9 z^i$. We just need a function that can separate these, and hence can find functions for any $i$. Then take $\alpha = 10^i \pi$. $\sin{x}$ crosses the axis at multiples of $pi$, so $\sin{\alpha x}$ crosses the axis at every $10^{-i}$. Hence our indicator function will cross the axis between  $z^l$ and $z^{i-1}$ (multiple times infact!).
+Pick any $i$. Then the distance from $z^i$ to $z^{i-1}$ is greater than $10^{-i}$. We just need a function that can separate these, and hence can find functions for any $i$. Then take $\alpha = 10^i \pi$. $\sin{x}$ crosses the axis at multiples of $\pi$, so $\sin{\alpha x}$ crosses the axis when $x$ is an integer multiple of $10^{-i}$. Hence our indicator function will cross the axis between  $z^l$ and $z^{i-1}$ (multiple times infact!).
 Hence the functions can shatter arbitrarily long sequences of points on the line as required.
