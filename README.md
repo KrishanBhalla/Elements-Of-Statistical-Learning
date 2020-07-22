@@ -18,4 +18,4 @@ Select solutions and code relating to Elements Of Statistical Learning by Hastie
 On page 267 of the 2nd edition, between (8.21) and (8.22) there is the claim:
 "The information matrix for <img src="https://render.githubusercontent.com/render/math?math=\theta = (\beta, \sigma^2)"> is block-diagonal..."
 
-This claim only holds for <img src="https://render.githubusercontent.com/render/math?math=\theta = \hat{\theta}">, the maximum likelihood estimate, as the non-diagonal terms are mutliples of <img src="https://render.githubusercontent.com/render/math?math=H^T(y-H\beta)">, which vanishes at <img src="https://render.githubusercontent.com/render/math?math=\hat{\theta}">
+This claim holds for <img src="https://render.githubusercontent.com/render/math?math=\beta = \hat{\beta}">, the maximum likelihood estimate, as the non-diagonal terms are mutliples of <img src="https://render.githubusercontent.com/render/math?math=H^T(y-H\beta)">, which vanishes at <img src="https://render.githubusercontent.com/render/math?math=\hat{\beta}">
