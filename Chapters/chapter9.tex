@@ -1,0 +1,61 @@
+\chapter{Chapter 9 - Additive Models, Trees, and Related Methods}
+
+\subsection*{9.2a Please see book}
+
+The $i$th row of (9.33) in the book gives:
+$$ f_i + \sum_{j \neq i} S_i f_j = S_j y$$
+Hence:
+$$ f_i = S_i\left[ y - sum_{j \neq i} f_j\right]$$
+This is exactly the back-fitting step given that a smoothing spline fit to a mean-zero response has mean zero.
+
+\subsection*{9.2b Please see book}
+
+We can take the eigendecomposition of the $S_i$, $S_i = U_i D_i U_i^T$, with $D_i$ diagonal and the $U_i$ orthonormal.
+Then:
+\begin{align*}
+    f_1 &\leftarrow S_1 \left[y - f_2\right] \\
+    f_2 &\leftarrow S_2 \left[y - f_1\right] 
+\end{align*}
+\begin{align*}
+    f_1 &\leftarrow U_1 D_1 U_1^T \left[y - f_2\right] \\
+    f_2 &\leftarrow U_2 D_2 U_2^T \left[y - f_1\right]   
+\end{align*}
+\begin{align*}
+    U_1^T f_1 &\leftarrow D_1 U_1^T \left[y - f_2\right] \\
+    U_2^T f_2 &\leftarrow D_2 U_2^T \left[y - f_1\right] 
+\end{align*}
+Let $g_i = U_i^T f_i$, and let $z_i = D_i U_i^T y_i$
+\begin{align*}
+    g_1 &\leftarrow z_1 - D_1 g_2 \\
+    g_2 &\leftarrow z_2 - D_2 g_1
+\end{align*}
+Hence:
+\begin{align*}
+    g_1 &\leftarrow z_1 - D_1 g_2 \\
+    &= z_1 - D_1 z_2 + D g_1\\
+    g_2 &\leftarrow z_1 - D_2 g_1\\
+    &= z_2 - D_2 z_1 + D g_2 
+\end{align*}
+Here $D = D_1 D_2$ is diagonal with values in $[0,1)$. Hence $g_1 = (I - D)^{-1} (z_1 - D_1 z_2)$ and similar for $g_2$.
+Lastly:
+\begin{align*}
+    f_1 &= U_1 (I - D)^{-1} (D_1 U_1^T y_1 - D U_2^T y_2)\\
+    f_2 &= U_2 (I - D)^{-1} (D_2 U_2^T y_2 - D U_1^T y_1)
+\end{align*}
+
+\subsection*{9.4 please see book}
+
+$$f_i \leftarrow S\left[ y - f_j \right] = Sy - S^2y + S^2 f_j$$
+Hence:
+\begin{align*}
+(I - S^2) f_i &= (S - S^2) y\\
+(I - S)(I+S) f_i &= (I - S) y\\
+f_i &= (I+S)^{-1} Sy
+\end{align*}
+Thus the residual is $r = y - f_1 - f_2$
+\begin{align*}
+    r &= y - 2 (I+S)^{-1} Sy \\
+    &= (I - 2 (I+S)^{-1} S) y\\
+    &= (I+S)^{-1}((I + S) - 2 S) y\\
+    &= (I+S)^{-1} (I - S) y
+\end{align*}
