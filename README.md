@@ -11,6 +11,7 @@ Select solutions and code relating to Elements Of Statistical Learning by Hastie
 |**6** | 6.1, 6.2, 6.5, 6.7, 6.8| 5 |
 |**7** | 7.1 - 7.7| 7 |
 |**8** | 8.1 - 8.4, 8.7| 5 |
+|**9** | 9.2, 9.4 |
 
 
 ## Errata
