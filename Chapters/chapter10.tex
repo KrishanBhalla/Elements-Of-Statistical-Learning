@@ -82,3 +82,108 @@ We're then done so long as this is truly a minimiser. To see this note that:
 As $Y \neq 0$.
 
 \subsection{10.3 Show that the marginal average (10.47) recovers additive and multiplicative functions (10.50) and (10.51), while the conditional expectation (10.49) does not.}
+
+Marginal Average:
+$$ f_{S}(X_S) = \mathbb{E}_{X_C} \left[ f(X_S, X_C) \right]$$
+
+Conditional Expectation:
+$$ \tilde{f}_{S}(X_S) = \mathbb{E} \left[ f(X_S, X_C) \vert X_S \right]$$
+
+\subsection*{a) Additive $f$}
+$$f(X) = h_1(X_S) + h_2(X_C)$$
+Then:
+\begin{align*}
+    f_{S}(X_S) &=  h_1(X_S) + \mathbb{E}_{X_C} \left[  h_2(X_C) \right] \\
+     \tilde{f}_{S}(X_S) &=  h_1(X_S) + \mathbb{E}\left[ h_2(X_C) \vert X_S \right]
+\end{align*}
+
+\subsection*{b) Multipicative $f$}
+$$f(X) = h_1(X_S) h_2(X_C)$$
+Then:
+\begin{align*}
+    f_{S}(X_S) &= h_1(X_S) \mathbb{E}_{X_C} \left[  h_2(X_C) \right] \\
+     \tilde{f}_{S}(X_S) &= h_1(X_S) \mathbb{E}\left[ h_2(X_C) \vert X_S \right]
+\end{align*}
+
+Note that $\mathbb{E}\left[ h_2(X_C) \vert X_S \right]$ is a function of $X_S$, while 
+$\mathbb{E}_{X_C} \left[  h_2(X_C) \right] $ is a constant.
+
+In particular $f_S$ recovers the additive and multiplicative functions up to constants, while $\tilde{f}$ only does so if $X_C$ and $X_S$ are independent. Else it recovers a sum (product) of functions of $X_S$
+
+
+\subsection*{10.5 Multiclass Exponential Loss. For a $K$-class classification problem consider the coding $Y = (Y_1, \dots, Y_K)^T)$ with 
+$$Y_K = \twopartdef{1}{G = \mathbf{G}_k}{-\frac{1}{K-1}}{G \neq \mathbf{G}_k}$$
+Let $f = (f_1, \dots, f_K)^T$ with $f^T \mathbb{1} = 0$, and define
+$$ L(Y, f) = \exp \left(-\frac{1}{K}Y^T f\right)$$
+a) Using Lagrange multipliers, derive the population minimiser $f^*$ of $L(Y, f)$, and relate these to the class probabilities.
+}
+
+Let $k$ be such that $G = G_k$ for fixed $Y$. Then using that $\frac{1}{K} = \frac{1}{K-1} - \frac{1}{K\left(K-1\right)}$
+$$ L(Y, f) = \exp\left(\frac{-1}{K(\left(K-1\right)} \sum_i f_i -\frac{1}{K-1} f_k\right) = \exp\left(-\frac{1}{K-1} f_k\right) $$
+$$ h(f, \lambda) = \mathbb{E}\left[L(Y, f)\right] + \lambda f^T \mathbb{1}$$
+
+\begin{align*}
+    \frac{\partial h}{\partial f_k}\vert_Y &= -\mathbb{P}(G = \mathbf{G}_k\vert x)\frac{1}{K-1} \exp \left(-\frac{1}{K-1} f_k\right) + \lambda \\
+    \frac{\partial h}{\partial \lambda} &= \lambda f^T \mathbb{1}\\
+\end{align*}
+
+Setting these equal to $0$, and using that $\frac{1}{K} = \frac{1}{K-1} - \frac{1}{K\left(K-1\right)}$:
+
+\begin{align*}
+   \lambda &= \mathbb{P}(G = \mathbf{G}_k\vert x)\frac{1}{K-1} \exp \left(-\frac{1}{K-1} f_k(x) \right) \\
+  f_k(x) &= -\left(K-1\right)\log\frac{\left(K-1\right)\lambda}{\mathbb{P}(G = \mathbf{G}_k\vert x)}
+\end{align*}
+
+We know $\sum_i f_i = 0$, so:
+\begin{align*}
+   0 &= -\left(K-1\right) \sum_i \log\frac{\left(K-1\right)\lambda}{\mathbb{P}(G = \mathbf{G}_i\vert x)}\\
+    &= -K\left(K-1\right) \log \left(\left(K-1\right)\lambda\right) \\
+    &+ \left(K-1\right)\sum_i \log\mathbb{P}(G = \mathbf{G}_i\vert x)\\
+   \Rightarrow \log \left(\left(K-1\right)\lambda\right) &= \frac{1}{K}\sum_i \log\mathbb{P}(G = \mathbf{G}_i\vert x)\\
+   \Rightarrow \lambda &= \frac{1}{K-1} e^{\frac{1}{K}\sum_i \log\mathbb{P}(G = \mathbf{G}_i\vert x)}\\
+   \Rightarrow f^*_k(x) &=  \frac{K-1}{K}\sum_i \log\frac{\mathbb{P}(G = \mathbf{G}_k\vert x)}{\mathbb{P}(G = \mathbf{G}_i\vert x)} 
+\end{align*}
+Note that this is a constant times the sum of the log-ratios of class probabilities - i.e. a function of the relative probability of this class vs all others individually.
+
+An expression for the probabilities would be
+$$ \mathbb{P}(G = \mathbf{G}_k\vert x) = \frac{\exp\left(\frac{f_k^*(x)}{K-1}\right)}{\sum_i \exp\left(\frac{f_i^*(x)}{K-1}\right)}$$
+
+\subsection*{b) Show that a multiclass boosting using this loss function leads to a reweighting algorithm similar to AdaBoost, as in Section 10.4}
+
+We start with the multiclass exponential loss above, and want to solve:
+$$(\beta_m, G_m) = argmin_{\beta, G} \sum_i  L(y_i, f_{m-1}(x_i) + \beta G(x_i))$$
+Explicitly, this gives:
+$$ (\beta_m, G_m) = argmin_{\beta, G} \sum_i w_i^{(m)} \exp\left( -\frac{\beta}{K} y_i^T G(x_i) \right)$$
+Where $G$ is a classifier coded as $Y$ was above\footnote{$G(x_i)_k = \twopartdef{1}{G= \mathbf{G_k}}{-1/(K-1)}{ G \neq \mathbf{G_k}}$}, and
+$$w_i^{(m)} = \exp\left(-y_i^T f_{m-1}(x_i)\right)$$
+We denote by $\Lambda^{(m)}(\beta, G)$ the term $\sum_i w_i^{(m)} \exp\left( -\frac{\beta}{K} y_i^T G(x_i) \right)$.
+
+Then just as for two classes, we can separate into those with $y_i = G(x_i)$ and those without.
+
+\begin{align*}
+    \Lambda^{(m)}(\beta, G) &= \sum_i w_i^{(m)} \exp\left( -\frac{\beta}{K} y_i^T G(x_i) \right) \\
+     &= \sum_{y_i = G(x_i)} w_i^{(m)} \exp\left( -\frac{\beta}{K} \left[1 + \frac{K-1}{(K-1)^2}\right] \right) \\
+     &+ \sum_{y_i \neq G(x_i)} w_i^{(m)} \exp\left( -\frac{\beta}{K} \left[-\frac{2}{K-1} + \frac{K-2}{(K-1)^2}\right] \right) \\
+     &= \exp\left( -\frac{1}{K-1}\beta \right) \sum_{y_i = G(x_i)} w_i^{(m)}  + \exp\left( \frac{1}{(K-1)^2} \beta \right)  \sum_{y_i \neq G(x_i)} w_i^{(m)} \\
+     &= \exp\left( -\frac{1}{K-1}\beta \right) \sum_{i} w_i^{(m)}  \\
+     &+ \left[\exp\left( \frac{1}{(K-1)^2} \beta \right) - \exp\left( -\frac{1}{K-1}\beta \right)\right]  \sum_{i} w_i^{(m)} \mathbb{I}_{y_i \neq G(x_i)} 
+\end{align*}
+
+The only term involving $G$ is the last, hence as for the $2$ class case, we have
+$$ G_m = argmin_G \sum_{i} w_i^{(m)} \mathbb{I}_{y_i \neq G(x_i)} $$
+
+Differentiating w.r.t $\beta$ gives and setting it to $0$ gives:
+\begin{align*}
+    0 &=\frac{\partial}{\partial \beta} \Lambda^{(m)}(\beta, G) \\
+     &= -\frac{1}{K-1} \exp\left( -\frac{1}{K-1}\beta \right) \sum_{y_i = G(x_i)} w_i^{(m)}  \\
+     &+ \frac{1}{(K-1)^2}  \exp\left( \frac{1}{(K-1)^2} \beta \right) \sum_{y_i \neq G(x_i)} w_i^{(m)} \\
+     \Rightarrow \exp\left[\frac{K}{(K-1)^2} \beta \right] &= (K-1)\frac{\sum_{y_i = G(x_i)} w_i^{(m)}}{\sum_{y_i \neq G(x_i)} w_i^{(m)}} 
+\end{align*}
+
+Hence
+\begin{align*}
+    \beta_m &= \frac{\left(K-1\right)^2}{K} \log\left[(K-1)\frac{\sum_{y_i = G(x_i)} w_i^{(m)}}{\sum_{y_i \neq G(x_i)} w_i^{(m)}}\right] \\
+    &= \frac{\left(K-1\right)^2}{K} \left[\log\left(\frac{1 - err_m}{err_m}\right) + \log (K-1) \right]
+\end{align*} 
+
+Note that this agrees with the regular AdaBoost criterion in the special case when $K = 2$.
