@@ -1,0 +1,84 @@
+\chapter{Chapter 10 - Boosting and Additive Trees}
+
+\section*{Notes on AdaBoost.M1}
+\subsubsection*{Algorithm}
+\begin{enumerate}
+    \item Initialise $w = \left[\frac{1}{N}, \dots, \frac{1}{N} \right]$
+    \item For $m = 1, \dots M$
+    \begin{enumerate}
+        \item Fit $G_m$ with weights $w$
+        \item Compute the error as $err_m = w^T \mathbb{I}(y \neq G_m(x)) / w^T \mathbb{1}$
+        \item Set $\alpha_m = log((1-err_m) / err_m)$
+        \item set $w \leftarrow w  \exp\left[\alpha_m \mathbb{I}(y \neq G_m(x))\right]$
+    \end{enumerate}
+    \item Output $G(x) = \sum \alpha_m G_m(x)$
+\end{enumerate}
+\subsubsection*{Questions}
+\begin{itemize}
+    \item How to choose $M$? Fitting the aggregated model at each $M$ until training error decreases by sufficiently little? What is the model-complexity trade off here. If $G$ has $K$ degrees of freedom say, does boosting give $MK$ degrees of freedom?
+    \item Can AdaBoost get "stuck" alternating between few poorly classified examples?
+    \item What is the natural generalisation to multiple classes / to regression?
+\end{itemize}
+
+\subsubsection*{AdaBoost as a Forward Stagewise Additive Model}
+
+$L(y, f(x)) = \exp(-y f(x))$
+We deal with binary classification again $y_i \in \{-1,1\}$
+The goal is to solve:
+\begin{align*}
+    (\beta_m, G_m) &= argmin_{\beta, G} \sum_i \exp(-y_i(f_{m-1}(x_i) + \beta G(x_i))) \\
+     &= argmin_{\beta, G} \sum_i w_i^{(m)}\exp(-y_i \beta G(x_i))) 
+\end{align*}
+Where $w_i^{(m)} =  \exp(-y_i f_{m-1}(x_i)$
+Fix $\beta \geq 0$, then we can rewrite expression to be minimised as (dropping the superscript $m$ for convenience and using vectorised notation):
+\begin{align*}
+    & \exp(-\beta) \sum_{y_i = G(x_i)} w_i^{(m)} + \exp(\beta) \sum_{y_i \neq G(x_i)} w_i^{(m)}\\
+    &= \left(\exp(\beta) - \exp(-\beta)\right) \sum_{i} w_i^{(m)}\mathbb{I}\left(y_i \neq G(x_i)\right)+ \exp(\beta) \sum_{i} w_i^{(m)}
+\end{align*}
+Differentiating w.r.t $\beta$ and setting the result to $0$ gives:
+\begin{align*}
+   0 &= \frac{\partial }{\partial \beta} \left(\exp(\beta) - \exp(-\beta)\right) w^T\mathbb{I}(y \neq G(x)) + \exp(-\beta) w^T \mathbb{1} \\
+   &= \left(\exp(\beta) + \exp(-\beta)\right) w^T\mathbb{I}(y \neq G(x)) + \exp(-\beta) w^T \mathbb{1} \\
+    \Rightarrow&  \exp(-\beta) w^T \mathbb{1} = \left(\exp(\beta) + \exp(-\beta)\right) \frac{w^T\mathbb{I}(y \neq G(x))}{ w^T \mathbb{1}} \\
+   \Rightarrow&  \exp(-\beta) w^T \mathbb{1}  = \left(\exp(\beta) + \exp(-\beta)\right) err_m \\
+   \Rightarrow&  1 =  \left(\exp(2\beta) + 1 \right) err_m \\
+   \Rightarrow&   \beta = \frac{1}{2} \log\frac{err_m - 1}{err_m} 
+\end{align*}
+
+Then $f_m(x) = f_{m-1}(x) + \beta_m G_m(x)$
+So $$w_i^{(m+1)} = w_i^{(m)}  \exp\left(-\beta_m y_i G_m(x_i)\right)$$
+
+Lastly $ -y^T G_m(x) = 2 \mathbb{I}\left(y \neq G_m(x)\right) - 1$ gives us:
+$$w_i^{(m+1)} = w_i^{(m)}  \exp\left(-\alpha_m \mathbb{I}\left(y \neq G_m(x)\right) \right)\exp\left(
+-\beta_m\right)$$
+Adjusting $w_i$ as needed, this is equivalent to AdaBoost.
+
+
+\section*{Excercises}
+\subsection*{10.1 Derive expression (10.12) for the update parameter in AdaBoost}
+We solved this in our notes above, by differentiating w.r.t. $\beta$.
+
+\subsection*{10.2 Prove result (10.16), that is, the minimiser of the population of the AdaBoost criterion, is one-half of the log odds}
+
+In other words, find $f^*(x)$ such that:
+
+$$ f^*(x) = argmin_{f(x)} \mathbb{E}_Y e^{-Yf(x)}$$
+
+\begin{align*}
+    0 &= \frac{\partial}{\partial f}  \mathbb{E}_Y \left[e^{-Yf(x)}\right]\\
+    &=   \mathbb{E}_Y \left[-Ye^{-Yf^*(x)}\right]\\
+    &=   \sum_{y \in \{-1, 1\}} -ye^{-yf^*(x)} P(Y = y \vert x) \\
+    &=   -e^{-f^*(x)} P(Y = 1 \vert x) + e^{f^*(x)} P(Y = -1 \vert x) \\
+    &=   -P(Y = 1 \vert x) + e^{2 f^*(x)} P(Y = -1 \vert x) \\
+    \Rightarrow e^{2 f^*(x)} &= \frac{P(Y = 1 \vert x)}{P(Y = -1 \vert x) }\\
+    \Rightarrow f^*(x) &= \frac{1}{2} \log \frac{P(Y = 1 \vert x)}{P(Y = -1 \vert x) }
+\end{align*}
+We're then done so long as this is truly a minimiser. To see this note that:
+\begin{align*}
+     \frac{\partial^2}{\partial f^2}  \mathbb{E}_Y \left[e^{-Yf(x)}\right] &= \frac{\partial}{\partial f} \mathbb{E}_Y \left[-Ye^{-Yf(x)}\right] \\
+     &=  \mathbb{E}_Y \left[Y^2 e^{-Yf(x)}\right] \\
+     &> 0
+\end{align*}
+As $Y \neq 0$.
+
+\subsection{10.3 Show that the marginal average (10.47) recovers additive and multiplicative functions (10.50) and (10.51), while the conditional expectation (10.49) does not.}
