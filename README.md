@@ -12,7 +12,7 @@ Select solutions and code relating to Elements Of Statistical Learning by Hastie
 |**7** | 7.1 - 7.7| 7 |
 |**8** | 8.1 - 8.4, 8.7| 5 |
 |**9** | 9.2, 9.4 | 2|
-|**10** | 10.1 - 10.3, 10.5 | 4|
+|**10** | 10.1 - 10.3, 10.5, <br> 10.7 - 10.10, 10.12 | 9|
 
 
 ## Errata
