@@ -10,13 +10,13 @@
 
 Our norm here is the $L^2$ norm. 
 \begin{align*}
-    argmin_k \norm{t_k - \hat{y}} &=  argmin_k \norm{t_k - \hat{y}}^2 \\
-    &= argmin_k \sum_i \left(\hat{y}_i - (t_k)_i\right)^2 \\
-    &= argmin_k \sum_i \left(\hat{y}_i - \delta_{i, k}\right)^2 \\
-    &= argmin_k \left( 1 - 2 \hat{y}_k + \sum_i  \hat{y}_i^2\right)  \\
-    &= argmin_k \left(-2\hat{y}_k\right)
+    \arg\min_k \norm{t_k - \hat{y}} &=  \arg\min_k \norm{t_k - \hat{y}}^2 \\
+    &= \arg\min_k \sum_i \left(\hat{y}_i - (t_k)_i\right)^2 \\
+    &= \arg\min_k \sum_i \left(\hat{y}_i - \delta_{i, k}\right)^2 \\
+    &= \arg\min_k \left( 1 - 2 \hat{y}_k + \sum_i  \hat{y}_i^2\right)  \\
+    &= \arg\min_k \left(-2\hat{y}_k\right)
 \end{align*}
-Where the last line follows as it is the only term dependant on $k$. $argmin$ is independent of scale, so the above states that the $k$ corresponding to the minimum value of the norm is exactly the largest element of $\hat{y}$
+Where the last line follows as it is the only term dependant on $k$. $\arg\min$ is independent of scale, so the above states that the $k$ corresponding to the minimum value of the norm is exactly the largest element of $\hat{y}$
 
 
 
@@ -73,12 +73,12 @@ The squared distance from the origin is just $z_i^2$, with distribution $\chi^2_
 \subsection*{2.6 Consider a regression problem with inputs $x_i$ and outputs $y_i$, and a parameters model $f_\theta(x)$ to be fit by least squares. Show that if there are observations with tied or identical values of $x$ then the fir can be obtained from a reduced weighted least squares problem.}
 
 The problem can of finding $\theta$ amounts to solving the following:
-$$argmin_\theta \left(y - f_\theta(x)\right)^T \left(y - f_\theta(x)\right)$$
+$$\arg\min_\theta \left(y - f_\theta(x)\right)^T \left(y - f_\theta(x)\right)$$
 
 Denote by $z_1, \dots, z_M$ the unique values of $x$ in our training set, denote by $n_j$ the number of occurrences of value $z_j$. 
 Then let $t_j = \frac{1}{n_j}\sum_{i=1}^{n_j} y_i$
 If we can get to the following, we're done (as it is in the form of weighted regression). 
-$$argmin_\theta \sum_j n_j \left(t_j - f_\theta(z_j)\right)^2$$
+$$\arg\min_\theta \sum_j n_j \left(t_j - f_\theta(z_j)\right)^2$$
 
 Expanding the initial expression we get (denoting by $y_{i,j}$ the $i$th value of $y$ corresponding to input $z_j$):
 \begin{align*}
@@ -90,9 +90,9 @@ Expanding the initial expression we get (denoting by $y_{i,j}$ the $i$th value o
     &= \sum_{j=1}^M   n_j  (t_j -  f_\theta(z_j)) ^ 2 - \sum_{j=1}^M n_j t_j^2 + \sum_{j=1}^M   \left(\sum_i y_{i,j}^2\right) 
 \end{align*}
 This last trick of adding $0$ leaves us with an expression where only the first sum is dependant on $\theta$
-Thus when taking $argmin_\theta$ we can ignore the last two terms.
+Thus when taking $\arg\min_\theta$ we can ignore the last two terms.
 
 This leaves us with the required equivalence.:
 
-$$argmin_\theta \left(y - f_\theta(x)\right)^T \left(y - f_\theta(x)\right) = argmin_\theta \sum_j n_j \left(t_j - f_\theta(z_j)\right)^2$$
+$$\arg\min_\theta \left(y - f_\theta(x)\right)^T \left(y - f_\theta(x)\right) = \arg\min_\theta \sum_j n_j \left(t_j - f_\theta(z_j)\right)^2$$
 

@@ -85,9 +85,9 @@ We can invert $R$ via backpropogation, and $Q^T y$ is easily calculable.
 
 
 \subsection*{3.5 Show that the ridge regression problem (using $\alpha$ to denote the constant intercept vector)
-$$\hat{\beta} = argmin_{\beta,\alpha} \left(y - \alpha - X \beta\right)^T\left(y - \alpha - X \beta\right) + \lambda \norm{\beta}^2 $$
+$$\hat{\beta} = \arg\min_{\beta,\alpha} \left(y - \alpha - X \beta\right)^T\left(y - \alpha - X \beta\right) + \lambda \norm{\beta}^2 $$
 is equivalent to the problem:
-$$\hat{\beta^c} = argmin_{\beta^c, \alpha^c} \left(y - \alpha^c - \tilde{X} \beta^c\right)^T\left(y - \alpha^c - \tilde{X} \beta^c\right) + \lambda \norm{\beta^c}^2 $$
+$$\hat{\beta^c} = \arg\min_{\beta^c, \alpha^c} \left(y - \alpha^c - \tilde{X} \beta^c\right)^T\left(y - \alpha^c - \tilde{X} \beta^c\right) + \lambda \norm{\beta^c}^2 $$
 Where $\tilde{X} = X - \bar{X}$, and bar represents the the $N x p)$ matrix where each value in the $j$th column is the mean $x_j$. Give the correspondence between $\beta^c$ and the original $\beta$. Do the same for the lasso.\footnote{
 This is all a tad odd as regression with intercept is desired, but we only penalise the non-intercept terms.}}
 
@@ -134,9 +134,9 @@ Where $\Sigma = \left(X^T X + \frac{\sigma^2}{\tau} I \right)$ is a $(p+1) * (p+
 Thus the posterior has a multivariate gaussian pdf (up to scaling), so the mean and mode of the distribution are identical, and can be found by maximising (5) over $\beta$, which due to the minus sign is sufficient.
 
 This amounts to
-$$argmin_\beta \left( \frac{1}{\tau}\beta^T \beta  +  \frac{1}{\sigma^2}\left(y - X\beta\right) ^T \left(y - X\beta\right)\right)$$ 
+$$\arg\min_\beta \left( \frac{1}{\tau}\beta^T \beta  +  \frac{1}{\sigma^2}\left(y - X\beta\right) ^T \left(y - X\beta\right)\right)$$ 
 And hence is equivalent to solving:
-$$argmin_\beta  \left(\frac{\sigma^2}{\tau}\beta^T \beta  + \left(y - X\beta\right) ^T \left(y - X\beta\right)\right)$$
+$$\arg\min_\beta  \left(\frac{\sigma^2}{\tau}\beta^T \beta  + \left(y - X\beta\right) ^T \left(y - X\beta\right)\right)$$
 
 Hence the ridge regression parameter is $\sigma^2 / \tau$
 
@@ -282,12 +282,12 @@ Then we see:
 All terms are non-negative, and increase with decreasing $\lambda$ so $\hat{\beta}^{ridge}$ must too.
 Recall that we can view the ridge regression estimate as the solution to
 
-$$\hat{\beta}^{ridge} = argmin_\beta (y - X\beta)^T (y - X \beta) + \lambda \norm{\beta}_2^2$$
+$$\hat{\beta}^{ridge} = \arg\min_\beta (y - X\beta)^T (y - X \beta) + \lambda \norm{\beta}_2^2$$
 
 b) Lasso\\
 
 Under a similar formulation, we have 
-$$\hat{\beta}^{lasso} = argmin_\beta (y - X\beta)^T (y - X \beta) + \lambda \norm{\beta}_1$$
+$$\hat{\beta}^{lasso} = \arg\min_\beta (y - X\beta)^T (y - X \beta) + \lambda \norm{\beta}_1$$
 
 In a similar way one can see that if $\lambda$ is sufficiently large, it dominates this expression (for fixed $X$ and $y$), and so $\hat{\beta}^{lasso}$ will decrease in norm with increasing $\lambda$.
 
