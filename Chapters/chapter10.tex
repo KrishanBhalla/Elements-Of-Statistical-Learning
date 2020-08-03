@@ -26,8 +26,8 @@ $L(y, f(x)) = \exp(-y f(x))$
 We deal with binary classification again $y_i \in \{-1,1\}$
 The goal is to solve:
 \begin{align*}
-    (\beta_m, G_m) &= argmin_{\beta, G} \sum_i \exp(-y_i(f_{m-1}(x_i) + \beta G(x_i))) \\
-     &= argmin_{\beta, G} \sum_i w_i^{(m)}\exp(-y_i \beta G(x_i))) 
+    (\beta_m, G_m) &= \arg\min_{\beta, G} \sum_i \exp(-y_i(f_{m-1}(x_i) + \beta G(x_i))) \\
+     &= \arg\min_{\beta, G} \sum_i w_i^{(m)}\exp(-y_i \beta G(x_i))) 
 \end{align*}
 Where $w_i^{(m)} =  \exp(-y_i f_{m-1}(x_i)$
 Fix $\beta \geq 0$, then we can rewrite expression to be minimised as (dropping the superscript $m$ for convenience and using vectorised notation):
@@ -62,7 +62,7 @@ We solved this in our notes above, by differentiating w.r.t. $\beta$.
 
 In other words, find $f^*(x)$ such that:
 
-$$ f^*(x) = argmin_{f(x)} \mathbb{E}_Y e^{-Yf(x)}$$
+$$ f^*(x) = \arg\min_{f(x)} \mathbb{E}_Y e^{-Yf(x)}$$
 
 \begin{align*}
     0 &= \frac{\partial}{\partial f}  \mathbb{E}_Y \left[e^{-Yf(x)}\right]\\
@@ -81,7 +81,7 @@ We're then done so long as this is truly a minimiser. To see this note that:
 \end{align*}
 As $Y \neq 0$.
 
-\subsection{10.3 Show that the marginal average (10.47) recovers additive and multiplicative functions (10.50) and (10.51), while the conditional expectation (10.49) does not.}
+\subsection*{10.3 Show that the marginal average (10.47) recovers additive and multiplicative functions (10.50) and (10.51), while the conditional expectation (10.49) does not.}
 
 Marginal Average:
 $$ f_{S}(X_S) = \mathbb{E}_{X_C} \left[ f(X_S, X_C) \right]$$
@@ -151,9 +151,9 @@ $$ \mathbb{P}(G = \mathbf{G}_k\vert x) = \frac{\exp\left(\frac{f_k^*(x)}{K-1}\ri
 \subsection*{b) Show that a multiclass boosting using this loss function leads to a reweighting algorithm similar to AdaBoost, as in Section 10.4}
 
 We start with the multiclass exponential loss above, and want to solve:
-$$(\beta_m, G_m) = argmin_{\beta, G} \sum_i  L(y_i, f_{m-1}(x_i) + \beta G(x_i))$$
+$$(\beta_m, G_m) = \arg\min_{\beta, G} \sum_i  L(y_i, f_{m-1}(x_i) + \beta G(x_i))$$
 Explicitly, this gives:
-$$ (\beta_m, G_m) = argmin_{\beta, G} \sum_i w_i^{(m)} \exp\left( -\frac{\beta}{K} y_i^T G(x_i) \right)$$
+$$ (\beta_m, G_m) = \arg\min_{\beta, G} \sum_i w_i^{(m)} \exp\left( -\frac{\beta}{K} y_i^T G(x_i) \right)$$
 Where $G$ is a classifier coded as $Y$ was above\footnote{$G(x_i)_k = \twopartdef{1}{G= \mathbf{G_k}}{-1/(K-1)}{ G \neq \mathbf{G_k}}$}, and
 $$w_i^{(m)} = \exp\left(-y_i^T f_{m-1}(x_i)\right)$$
 We denote by $\Lambda^{(m)}(\beta, G)$ the term $\sum_i w_i^{(m)} \exp\left( -\frac{\beta}{K} y_i^T G(x_i) \right)$.
@@ -170,7 +170,7 @@ Then just as for two classes, we can separate into those with $y_i = G(x_i)$ and
 \end{align*}
 
 The only term involving $G$ is the last, hence as for the $2$ class case, we have
-$$ G_m = argmin_G \sum_{i} w_i^{(m)} \mathbb{I}_{y_i \neq G(x_i)} $$
+$$ G_m = \arg\min_G \sum_{i} w_i^{(m)} \mathbb{I}_{y_i \neq G(x_i)} $$
 
 Differentiating w.r.t $\beta$ gives and setting it to $0$ gives:
 \begin{align*}
@@ -187,3 +187,114 @@ Hence
 \end{align*} 
 
 Note that this agrees with the regular AdaBoost criterion in the special case when $K = 2$.
+
+\subsection*{10.7 Derive expression (10.32)}
+
+We wish to find the solution to the following given the $R_{j,m}$ and that $L$ is the exponential loss:
+$$\hat{\gamma}_{j,m} = \arg\min_{\gamma_{j,m}} \sum_{x_i \in R_{j,m}} L\left(y_i, f_{m-1}(x_i) + \gamma_{j,m} \right)$$
+Hence:
+\begin{align*}
+    \hat{\gamma}_{j,m} &= \arg\min_{\gamma_{j,m}} \sum_{x_i \in R_{j,m}} L\left(y_i, f_{m-1}(x_i) + \gamma_{j,m} \right) \\
+    &= \arg\min_{\gamma_{j,m}} \sum_{x_i \in R_{j,m}} \exp\left(-y_i f_{m-1}(x_i)\right) \exp\left(-y_i \gamma_{j,m} \right) \\
+    &= \arg\min_{\gamma_{j,m}} \sum_{x_i \in R_{j,m}} w_i^{m} \exp\left(-y_i \gamma_{j,m} \right) \\
+    &= \arg\min_{\gamma_{j,m}}  e^{-\gamma_{j,m} } \sum_{x_i \in R_{j,m}} w_i^{m} I(y_i = 1) + e^{\gamma_{j,m} } \sum_{x_i \in R_{j,m}} w_i^{m} I(y_i = -1)
+\end{align*}
+Define
+$$ g_{j,m}(\gamma_{j,m}) = e^{-\gamma_{j,m} } \sum_{x_i \in R_{j,m}} w_i^{m} I(y_i = 1) + e^{\gamma_{j,m} } \sum_{x_i \in R_{j,m}} w_i^{m} I(y_i = -1)$$
+Then setting the partial derivative to zero at $\hat{\gamma}_{j,m}$ gives:
+\begin{align*}
+    \frac{\partial g_{j,m}}{\partial \gamma_{j,m}}(\hat{\gamma}_{j,m}) &=  -e^{-\hat{\gamma}_{j,m} } \sum_{x_i \in R_{j,m}} w_i^{m} I(y_i = 1) + e^{\hat{\gamma}_{j,m}} \sum_{x_i \in R_{j,m}} w_i^{m} I(y_i = -1)\\ 
+    &= 0\\
+   &\Rightarrow e^{2\hat{\gamma}_{j,m}} = \frac{\sum_{x_i \in R_{j,m}} w_i^{m} I(y_i = 1)}{\sum_{x_i \in R_{j,m}} w_i^{m} I(y_i = -1)} \\ 
+   &\Rightarrow \hat{\gamma}_{j,m} = \frac{1}{2}\log\frac{\sum_{x_i \in R_{j,m}} w_i^{m} I(y_i = 1)}{\sum_{x_i \in R_{j,m}} w_i^{m} I(y_i = -1)} 
+\end{align*}
+This is expression (10.32).
+We do have to verify that it is a minima, but taking second derivatives leads to linear combination of strictly-positive functions with non-negative coefficients as required.
+
+\subsection*{10.8 see book}
+\subsection*{a) Write down the log likelihood and its first and second derivatives.}
+$$p_k(x) = \frac{e^{f_k(x)}}{\sum_j e^{f_j(x)}}$$
+With multinomial deviance, the log likelihood is simply:
+\begin{align*}
+    l &= \sum_{x_i \in R} \sum_{k=1}^K y_{i,k} \log p_k(x_i)\\
+    &= \sum_{x_i \in R} \sum_{k=1}^K y_{i,k} \log \frac{e^{f_k(x_i) + \gamma_k}}{\sum_j e^{f_j(x_i) + \gamma_j}} \\
+    &= \sum_{x_i \in R} \sum_{k=1}^K y_{i,k} \left[\log e^{f_k(x_i) + \gamma_k} - \log \left( \sum_j e^{f_j(x_i) + \gamma_j}\right) \right]\\
+    &= \sum_{x_i \in R} \sum_{k=1}^K y_{i,k} \left[f_k(x_i) + \gamma_k\right]  - \sum_{x_i \in R} \sum_{k=1}^K y_{i,k} \log \left( \sum_j e^{f_j(x_i) + \gamma_j}\right)\\
+    &= \sum_{x_i \in R} \sum_{k=1}^K y_{i,k} \left[f_k(x_i) + \gamma_k\right]  - \sum_{x_i \in R} \log \left( \sum_j e^{f_j(x_i) + \gamma_j}\right)
+\end{align*}
+The first derivative is:
+$$\frac{\partial l}{\partial \gamma_k} = \sum_{x_i \in R} y_{i,k} - \sum_{x_i \in R} \frac{e^{f_k(x_i) + \gamma_k}}{ \sum_j e^{f_j(x_i) + \gamma_j}}$$
+Setting $\gamma_j = 0$ $\forall j$ gives $\frac{\partial l}{\partial \gamma_k} = \sum_{x_i \in R} (y_{i,k} - p_k(x_i))$.
+The second derivatives are
+\begin{align*}
+    \frac{\partial^2 l}{\partial \gamma_k^2} &= -\sum_{x_i \in R} \frac{e^{f_k(x_i) + \gamma_k} \sum_j e^{f_j(x_i) + \gamma_j} - e^{2f_k(x_i) + 2\gamma_k}}{ \left(\sum_j e^{f_j(x_i) + \gamma_j}\right)^2}\\
+    \frac{\partial^2 l}{\partial \gamma_k\gamma_m} &= \sum_{x_i \in R} \frac{e^{f_k(x_i) + \gamma_k}e^{f_m(x_i) + \gamma_m}}{ \left(\sum_j e^{f_j(x_i) + \gamma_j}\right)^2}
+\end{align*}
+Setting $\gamma_j = 0$ $\forall j$ gives $\frac{\partial^2 l}{\partial \gamma_k^2} = -\sum_{x_i \in R} p_k(x_i) (1 - p_k(x_i))$ (the diagonal of the Hessian matrix) and $\frac{\partial^2 l}{\partial \gamma_k \gamma_m} = -\sum_{x_i \in R} p_k(x_i) p_m(x_i))$ (the non-diagonal terms, $k \neq m$).
+
+\subsection*{b) The Newton update}
+The update in this case is $$\gamma_k^{1} = -\frac{\partial l / \partial \gamma_k }{{\partial^2 l / \partial \gamma_k^2 }} (0)$$
+From part a), we have that this is:
+$$\gamma_k^{1} = \frac{\sum_{x_i \in R} (y_{i,k} - p_k(x_i))}{\sum_{x_i \in R} p_k(x_i) (1 - p_k(x_i))}$$
+
+
+\subsection*{c) Setting the update sum to zero}
+
+First note that the update presently sums to $\sum_k \gamma_k^1$
+
+Thus to push the sum to zero, we can uniformly update as follows:
+$$ \hat{\gamma_k} = \gamma_k^1 - \frac{1}{K} \sum_j \gamma_j^1 $$
+
+If more generally we wanted an affine update $ \hat{\gamma_k} = a \gamma_k^1 + b$. and maintained our condition on the sum, we recover:
+\begin{align*}
+    0 &= \sum_k \hat{\gamma_k} \\
+    &= a \sum_k \gamma_k^1 + K b \\
+\Rightarrow b = -\frac{a}{K} \sum_k \gamma_k^1
+\end{align*}
+Thus $\hat{\gamma_k} = a \left[\gamma_k^1 - \frac{1}{K} \sum_k \gamma_k^1 \right]$. Any $a > 0$ will suffice here, but consider the coefficient of $\gamma_{k}^1$ on the RHS. I cannot see the point they're getting at about $a = (K-1) / K$ in particular.
+
+\subsection*{10.9 Please see book - Gradient Boosting for K-class Classification via multinomial deviance.}
+
+With $p_k(x) = e^{f_{k, m-1}(x) + \gamma_{k,m}} / \sum_l e^{f_{l,m-1}(x) + \gamma_{l,m}}$ at the beginning of the $m$th step we have.\footnote{c.f. question 10.8}:
+\begin{align*}
+    L_m(y, f(x)) &= -\sum_{k=1}^{K} y \log p_k(x) \\
+    &= -\sum_{k=1}^{K} y \left[f_{k, m-1}(x) + \gamma_{k,m}\right] +
+    \sum_{k=1}^{K} y \log \sum_l e^{f_{l,m-1}(x) + \gamma_{l,m}}
+\end{align*} 
+
+
+Computing the negative gradient with respect to $f_{k, m}$ gives:
+\begin{align*}
+    r_{i,k,m} &= -\frac{\partial L_m}{\partial f}\vert_{f = f_{k,m-1}}(x_i)\\ 
+    &=  y_{i,k} -   \sum_{l=1}^{K} y_{i,l} \frac{e^{f_{k,m-1}(x_i) + \gamma_{k,m}}}{\sum_n e^{f_{n,m-1}(x) + \gamma_{n,m}}} \\
+     &=  y_{i,k} - p_k(x_i) \sum_{l=1}^{K} y_{i,l}\\
+     &=  y_{i,k} -  p_k(x_i) 
+\end{align*}
+
+Now we see steps (b) i and ii in the algorithm are identical to those in Algorithm 10.3. Using 10.8 for the first and second derivatives, we have the Newton-Rhapson update:
+
+\begin{align*}
+    -\frac{\partial L_m / \partial \gamma_{j,k,m} }{{\partial^2 L_m / \partial \gamma_{j,k,m}^2 }} &= \frac{\sum_{x_i \in R_{j,k,m}} (y_{i,k} - p_k(x_i))}{\sum_{x_i \in R_{j,k,m}} p_k(x_i) (1 - p_k(x_i))} \\
+    &= \frac{\sum_{x_i \in R_{j,k,m}} r_{j,k,m}}{\sum_{x_i \in R_{j,k,m}} \abs{y_{i,k} - p_k(x_i)} ( 1 - \abs{y_{i,k} - p_k(x_i)}) } \\
+    &=  \frac{\sum_{x_i \in R_{j,k,m}} r_{j,k,m}}{\sum_{x_i \in R_{j,k,m}} \abs{r_{i,k,m}} ( 1 - \abs{r_{i,k,m}} )} 
+\end{align*}
+Using symmetry and that the $y_{i,k}$ take values in $\{0,1\}$.
+Then update of $\gamma_{j,k,m}$ is
+$$\gamma_{j,k,m} \leftarrow -\frac{K-1}{K}\frac{\partial L_m / \partial \gamma_{j,k,m} }{{\partial^2 L_m / \partial \gamma_{j,k,m}^2 }}$$
+Step (b) iv is again the same as algorithm 10.3.
+
+
+\subsection*{10.10 Show that for $K = 2$ class classification, only one tree needs to be grown at each gradient boosting iteration.}
+
+Recall the logistic model is $p_0(x) = e^{f_1(x)} / ( e^{f_1(x)} + e^{f_2(x)})$ and $p_1(x) = e_{f_2(x)} / ( e^{f_1(x)} + e^{f_2(x)} )$. However under the condition $\sum f_k = 0$, we have $f_1 = -f_2$. Thus only one tree needs to be grown - one to represent $f_1(x)$.
+
+\subsection*{10.12, please see book}
+
+$$[X_1, X_2]^T \sim N\left(0,\Sigma
+\right) $$
+
+With $$\Sigma = \begin{bmatrix}
+1 & \rho\\ 
+\rho & 1
+\end{bmatrix}$$
+Using the conditional mean of a multivariate normal recovers that $\mathbb{E}\left[X_1 \vert X_2\right] = \rho X_2$
